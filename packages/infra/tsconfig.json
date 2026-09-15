@@ -1,0 +1,15 @@
+{
+  "extends": "@workspace/typescript-config/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    // Bundler resolution — see packages/contracts/tsconfig.json for the
+    // full rationale. Internal imports stay extensionless across the
+    // monorepo; `.js` suffixes are not used.
+    "moduleResolution": "Bundler",
+    "module": "ESNext"
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

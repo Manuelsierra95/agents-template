@@ -1,0 +1,12 @@
+{
+  "extends": "@workspace/typescript-config/node.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "noEmit": true,
+    // Bundler resolution — see packages/contracts/tsconfig.json for the
+    // full rationale.
+    "moduleResolution": "Bundler",
+    "module": "ESNext"
+  }
+}

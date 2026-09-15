@@ -1,7 +1,12 @@
 {
   "extends": "@workspace/typescript-config/react-library.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "paths": {
+      "@workspace/ui/components/*": ["./src/components/*"],
+      "@workspace/ui/lib/*": ["./src/lib/*"],
+      "@workspace/ui/hooks/*": ["./src/hooks/*"],
       "@workspace/ui/*": ["./src/*"]
     }
   },

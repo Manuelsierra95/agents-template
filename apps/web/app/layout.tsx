@@ -1,17 +1,22 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
-
 import "@workspace/ui/globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@workspace/ui/lib/utils";
+import { Metadata, Viewport } from "next"
+import { GeistSans } from "geist/font/sans"
+import { GeistMono } from "geist/font/mono"
+import NextTopLoader from "nextjs-toploader"
+import { AppProviders } from "@/providers/app-providers"
+import { cn } from "@workspace/ui/lib/utils"
 
-const interHeading = Inter({subsets:['latin'],variable:'--font-heading'});
+export const metadata: Metadata = {
+  title: "Monorepo Agents",
+  description:
+    "A small library of extremely crafted, copy-paste components for chat agents, thinking states, human-in-the-loop approvals, and everything agents need to talk to humans beautifully.",
+}
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#fafaf7",
+}
 
 export default function RootLayout({
   children,
@@ -22,10 +27,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable, interHeading.variable)}
+      className={cn(
+        "antialiased",
+        GeistSans.variable,
+        GeistMono.variable,
+      )}
     >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="font-sans">
+        <NextTopLoader color="var(--ink)" showSpinner={false} />
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   )

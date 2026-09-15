@@ -1,0 +1,22 @@
+{
+  "extends": "@workspace/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": false,
+    "declaration": false,
+    "declarationMap": false,
+    // Bundler resolution — see packages/contracts/tsconfig.json for the
+    // full rationale. Cross-package paths map through `paths`; internal
+    // imports stay extensionless.
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@workspace/contracts": ["../../packages/contracts/src/index.ts"],
+      "@workspace/contracts/*": ["../../packages/contracts/src/*"],
+      "@workspace/contracts/chat": ["../../packages/contracts/src/chat/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

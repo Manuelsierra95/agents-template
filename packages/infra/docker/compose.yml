@@ -1,0 +1,45 @@
+services:
+  # Existing shared Postgres — left untouched.
+  postgres:
+    image: postgres:18
+    container_name: agents-template-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agents}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-agents}
+      POSTGRES_DB: ${POSTGRES_DB:-agents}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # PG 18 expects the volume to be mounted at /var/lib/postgresql so it
+      # can use a major-version subdirectory (/var/lib/postgresql/18/data)
+      # internally. Mounting at /var/lib/postgresql/data breaks the
+      # bootstrap detection in the official image.
+      - agents-template-postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-agents} -d $${POSTGRES_DB:-agents}"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  # Redis — optional. The realtime event bus uses Redis Pub/Sub when
+  # `REDIS_URL` is set (multi-replica deploys); without it the API
+  # falls back to an in-process event bus. Both modes use the same SSE
+  # endpoint and wire shape on the frontend.
+  redis:
+    image: redis:7-alpine
+    container_name: agents-template-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 3s
+
+volumes:
+  agents-template-postgres-data:
+    name: agents-template-postgres-data

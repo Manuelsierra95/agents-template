@@ -1,0 +1,34 @@
+{
+  "name": "@workspace/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "PROPRIETARY",
+  "exports": {
+    ".": "./src/index.ts",
+    "./realtime": "./src/realtime/index.ts",
+    "./agents": "./src/agents/index.ts",
+    "./appointments": "./src/appointments/index.ts",
+    "./catalog": "./src/catalog/index.ts",
+    "./notifications": "./src/notifications/index.ts",
+    "./playground": "./src/playground/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "^9",
+    "prettier": "^3.8.3",
+    "typescript": "^5",
+    "vitest": "^2.1.9"
+  }
+}

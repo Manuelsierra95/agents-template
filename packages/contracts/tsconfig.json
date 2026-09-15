@@ -1,0 +1,21 @@
+{
+  "extends": "@workspace/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": true,
+    // Override base `NodeNext` resolution: this package is consumed by
+    // both Node (apps/agent via Eve's bundler) and Next.js Turbopack,
+    // neither of which reliably rewrites `./foo.js` → `./foo.ts` for
+    // re-exports. Bundler resolution accepts extensionless relative
+    // paths (the conventional TS-monorepo style) and the consuming
+    // bundlers resolve `./schemas` directly to `./schemas.ts`.
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

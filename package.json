@@ -4,21 +4,47 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "dotenv -e .env -- turbo dev",
+    "dev:agent": "pnpm --filter agent dev",
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter web dev",
     "lint": "turbo lint",
     "format": "turbo format",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "test": "dotenv -e .env -- cross-env DATABASE_URL_TEST=${DATABASE_URL_TEST:-postgresql://agents:agents@127.0.0.1:5432/agents_test} pnpm -r --workspace-concurrency=1 --if-present run test",
+    "test:auth": "dotenv -e .env -- cross-env DATABASE_URL_TEST=${DATABASE_URL_TEST:-postgresql://agents:agents@127.0.0.1:5432/agents_test} pnpm --filter=@workspace/auth run test",
+    "test:api": "dotenv -e .env -- cross-env DATABASE_URL_TEST=${DATABASE_URL_TEST:-postgresql://agents:agents@127.0.0.1:5432/agents_test} pnpm --filter=api run test",
+    "test:db": "dotenv -e .env -- cross-env DATABASE_URL_TEST=${DATABASE_URL_TEST:-postgresql://agents:agents@127.0.0.1:5432/agents_test} pnpm --filter=@workspace/db run test",
+    "test:web": "pnpm --filter=web run test",
+    "db:up": "pnpm --filter @workspace/infra db:up",
+    "db:down": "pnpm --filter @workspace/infra db:down",
+    "db:status": "pnpm --filter @workspace/infra db:status",
+    "db:logs": "pnpm --filter @workspace/infra db:logs",
+    "db:generate": "pnpm --filter @workspace/db db:generate",
+    "db:migrate": "pnpm --filter @workspace/db db:migrate",
+    "db:push": "pnpm --filter @workspace/db db:push",
+    "db:studio": "pnpm --filter @workspace/db db:studio",
+    "db:reset": "pnpm --filter @workspace/db db:reset",
+    "db:seed": "pnpm --filter @workspace/db db:seed",
+    "db:test:setup": "node ./scripts/db-test-setup.mjs",
+    "prepare": "simple-git-hooks"
+  },
+  "simple-git-hooks": {
+    "pre-push": "pnpm test"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^7.4.2",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "simple-git-hooks": "^2.14.0",
     "turbo": "^2.9.18",
     "typescript": "^5"
   },
   "packageManager": "pnpm@10.33.4",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }
