@@ -4,6 +4,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "paths": {
+      "@/*": ["./src/*"],
       "@workspace/ui/components/*": ["./src/components/*"],
       "@workspace/ui/lib/*": ["./src/lib/*"],
       "@workspace/ui/hooks/*": ["./src/hooks/*"],

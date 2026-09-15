@@ -5,9 +5,9 @@ import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { MotionConfig } from "framer-motion"
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme-provider"
-import { QueryProvider } from "./query-provider"
+import { QueryProvider } from "@/providers/query-provider"
 import { AuthSessionProvider } from "@/features/auth"
-import { EventStreamProvider } from "./event-stream-provider"
+import { EventStreamProvider } from "@/providers/event-stream-provider"
 import { ShapeProvider } from "@workspace/ui/components/sidebar"
 
 /**

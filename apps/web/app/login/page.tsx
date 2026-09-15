@@ -2,7 +2,7 @@ import { Suspense } from "react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { AuthShell, LoginForm } from "@/features/auth"
-import { LoginSkeleton } from "./login-skeleton"
+import { LoginSkeleton } from "@/app/login/login-skeleton"
 import { getServerSession } from "@/lib/auth/server"
 
 export const metadata = {

@@ -5,7 +5,7 @@
  * renderer and any future consumer can share it.
  */
 
-import type { ToolEntry } from "./types"
+import type { ToolEntry } from "@/features/chat/utils/types"
 
 export type ProjectionField = { label: string; value: string }
 

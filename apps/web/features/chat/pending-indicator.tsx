@@ -1,6 +1,6 @@
 "use client"
 
-import { ThinkingIndicator } from "./components"
+import { ThinkingIndicator } from "@/features/chat/components"
 
 /**
  * Minimalist "the agent is thinking" indicator. Wraps the fluid

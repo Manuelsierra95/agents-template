@@ -8,7 +8,10 @@
     // full rationale. Internal imports stay extensionless across the
     // monorepo; `.js` suffixes are not used.
     "moduleResolution": "Bundler",
-    "module": "ESNext"
+    "module": "ESNext",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],
   "exclude": ["node_modules", "dist"]

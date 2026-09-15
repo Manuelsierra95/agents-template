@@ -1,4 +1,4 @@
-import { LoginSkeleton } from "./login-skeleton"
+import { LoginSkeleton } from "@/app/login/login-skeleton"
 
 export default function Loading() {
   return (

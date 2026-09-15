@@ -7,6 +7,9 @@
     // Bundler resolution — see packages/contracts/tsconfig.json for the
     // full rationale.
     "moduleResolution": "Bundler",
-    "module": "ESNext"
+    "module": "ESNext",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

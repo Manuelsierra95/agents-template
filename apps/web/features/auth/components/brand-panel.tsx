@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components"
 import type { IconName } from "@workspace/ui/components/sidebar"
-import { BrandFeatureItem } from "./brand-feature-item"
+import { BrandFeatureItem } from "@/features/auth/components/brand-feature-item"
 
 type Feature = {
   title: string

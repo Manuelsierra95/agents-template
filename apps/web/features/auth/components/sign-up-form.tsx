@@ -6,9 +6,9 @@ import { authClient } from "@/lib/auth/client"
 import { Button } from "@workspace/ui/components/button"
 import { InputGroup, InputField } from "@workspace/ui/components/input-group"
 import { useIcon } from "@workspace/ui/components/sidebar"
-import { AuthDivider } from "./auth-divider"
-import { GoogleButton } from "./google-button"
-import { TermsCheckbox } from "./terms-checkbox"
+import { AuthDivider } from "@/features/auth/components/auth-divider"
+import { GoogleButton } from "@/features/auth/components/google-button"
+import { TermsCheckbox } from "@/features/auth/components/terms-checkbox"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 

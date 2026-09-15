@@ -1,7 +1,7 @@
 import "server-only"
 import { headers } from "next/headers"
 import { z } from "zod"
-import { ApiError } from "./errors"
+import { ApiError } from "@/lib/api/errors"
 
 /**
  * Server-only API client.

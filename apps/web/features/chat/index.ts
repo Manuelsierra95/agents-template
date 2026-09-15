@@ -1,10 +1,10 @@
-export { ChatThread } from "./chat-thread"
-export type { ChatThreadProps } from "./chat-thread"
+export { ChatThread } from "@/features/chat/chat-thread"
+export type { ChatThreadProps } from "@/features/chat/chat-thread"
 
-export { ChatComposer } from "./chat-composer"
-export type { ChatComposerProps } from "./chat-composer"
+export { ChatComposer } from "@/features/chat/chat-composer"
+export type { ChatComposerProps } from "@/features/chat/chat-composer"
 
-export { PendingIndicator } from "./pending-indicator"
+export { PendingIndicator } from "@/features/chat/pending-indicator"
 
 export {
 	ChatMessage,
@@ -18,7 +18,7 @@ export {
 	ThinkingStepSource,
 	ThinkingStepSources,
 	ThinkingStepImage,
-} from "./components"
+} from "@/features/chat/components"
 
 export {
 	entrySide,
@@ -32,4 +32,4 @@ export {
 	type ToolStatus,
 	type ReasoningEntry,
 	type SenderSide,
-} from "./utils/types"
+} from "@/features/chat/utils/types"

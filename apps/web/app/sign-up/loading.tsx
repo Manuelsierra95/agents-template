@@ -1,4 +1,4 @@
-import { SignUpSkeleton } from "./sign-up-skeleton"
+import { SignUpSkeleton } from "@/app/sign-up/sign-up-skeleton"
 
 export default function Loading() {
   return (

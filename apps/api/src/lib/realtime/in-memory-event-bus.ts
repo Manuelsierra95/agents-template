@@ -1,5 +1,5 @@
 import type { RealtimeEvent } from "@workspace/contracts/realtime"
-import type { RealtimeEventBus } from "./event-bus"
+import type { RealtimeEventBus } from "@/lib/realtime/event-bus"
 
 /**
  * In-process fan-out for tests and dev (no Redis).

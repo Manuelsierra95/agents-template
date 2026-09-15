@@ -11,7 +11,7 @@
  * touching the renderer.
  */
 
-import type { ReasoningEntry } from "./types"
+import type { ReasoningEntry } from "@/features/chat/utils/types"
 
 export type ProjectedReasoning = {
 	label: string

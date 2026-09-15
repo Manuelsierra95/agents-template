@@ -1,6 +1,6 @@
 "use client"
 
-import { InputMessage } from "./components"
+import { InputMessage } from "@/features/chat/components"
 
 export type ChatComposerProps = {
   /** Controlled textarea value. The composer never mutates state itself. */

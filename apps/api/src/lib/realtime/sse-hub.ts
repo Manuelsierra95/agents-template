@@ -1,6 +1,6 @@
 import type { RealtimeEvent } from "@workspace/contracts/realtime"
 import type { SSEStreamingApi } from "hono/streaming"
-import type { RealtimeEventBus } from "./event-bus"
+import type { RealtimeEventBus } from "@/lib/realtime/event-bus"
 import { REALTIME_EVENT_TYPES } from "@workspace/contracts/realtime"
 import { logger } from "@/lib/logger"
 

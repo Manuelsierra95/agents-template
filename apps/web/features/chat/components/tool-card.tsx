@@ -3,8 +3,8 @@
 import {
 	projectToolInput,
 	projectToolOutputSummary,
-} from "../utils/project-tool"
-import type { ToolEntry } from "../utils/types"
+} from "@/features/chat/utils/project-tool"
+import type { ToolEntry } from "@/features/chat/utils/types"
 
 const STATUS_LABEL: Record<ToolEntry["status"], string> = {
 	running: "ejecutando…",

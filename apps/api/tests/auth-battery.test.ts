@@ -13,7 +13,7 @@
 import { describe, expect, it, beforeAll, afterAll, beforeEach } from "vitest"
 import { createApp, type AppEnv } from "@/app"
 import { loadEnv } from "@/config/env"
-import { makeSseClient } from "./sse-client"
+import { makeSseClient } from "@/sse-client"
 import {
   createDbHandle,
   type DbHandle,

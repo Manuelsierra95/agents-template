@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { apiFetch, apiFetchRaw } from "./client"
-import { type AppMe } from "./types"
+import { apiFetch, apiFetchRaw } from "@/lib/api/client"
+import { type AppMe } from "@/lib/api/types"
 
 /**
  * API facade.

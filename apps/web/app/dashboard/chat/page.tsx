@@ -1,5 +1,5 @@
 import { WorkspacePane } from "@/components/layout/workspace-pane"
-import { ChatPanel } from "./_components/chat-panel"
+import { ChatPanel } from "@/app/dashboard/chat/_components/chat-panel"
 
 /**
  * Auth-gated chat surface. The redirect logic lives in

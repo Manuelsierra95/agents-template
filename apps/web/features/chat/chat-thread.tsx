@@ -11,10 +11,10 @@ import {
   ThinkingStepSource,
   ThinkingStepSources,
   ThinkingStepImage,
-} from "./components"
-import { clockLabel, entrySide, longDateTimeLabel } from "./utils/types"
-import { projectReasoning } from "./utils/project-reasoning"
-import type { ChatEntry, ReasoningStep } from "./utils/types"
+} from "@/features/chat/components"
+import { clockLabel, entrySide, longDateTimeLabel } from "@/features/chat/utils/types"
+import { projectReasoning } from "@/features/chat/utils/project-reasoning"
+import type { ChatEntry, ReasoningStep } from "@/features/chat/utils/types"
 
 export type ChatThreadProps = {
   /**

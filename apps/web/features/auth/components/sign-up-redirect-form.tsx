@@ -1,4 +1,4 @@
-import { SignUpForm } from "./sign-up-form"
+import { SignUpForm } from "@/features/auth/components/sign-up-form"
 
 /**
  * Page-level wrapper for `/sign-up`.

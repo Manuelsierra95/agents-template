@@ -11,7 +11,7 @@
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*", "./tests/*"],
       "@workspace/contracts": ["../../packages/contracts/src/index.ts"],
       "@workspace/contracts/*": ["../../packages/contracts/src/*"],
       "@workspace/contracts/chat": ["../../packages/contracts/src/chat/index.ts"]

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { BrandPanel } from "./brand-panel"
+import { BrandPanel } from "@/features/auth/components/brand-panel"
 
 /**
  * Split-panel layout shared by `/login` and `/sign-up`.

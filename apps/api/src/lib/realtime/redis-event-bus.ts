@@ -1,6 +1,6 @@
 import { Redis } from "ioredis"
 import type { RealtimeEvent } from "@workspace/contracts/realtime"
-import { REALTIME_CHANNEL, type RealtimeEventBus } from "./event-bus"
+import { REALTIME_CHANNEL, type RealtimeEventBus } from "@/lib/realtime/event-bus"
 
 const SUBSCRIBE_CHECK_INTERVAL_MS = 30_000
 
