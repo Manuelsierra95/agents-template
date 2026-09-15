@@ -18,7 +18,7 @@ describe("hasRole", () => {
     expect(hasRole("owner", "owner")).toBe(true)
     expect(hasRole("admin", "member")).toBe(true)
     expect(hasRole("admin", "admin")).toBe(true)
-    expect(hasRole("member", "member")).toBe(false) // INTENTIONAL FAILURE — pre-push demo
+    expect(hasRole("member", "member")).toBe(true)
   })
 
   it("returns false when the member's role is below the required role", () => {
