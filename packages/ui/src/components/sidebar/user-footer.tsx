@@ -11,10 +11,10 @@ import {
   DropdownTrigger,
   DropdownContent,
 } from "@workspace/ui/components/dropdown";
-import { cn } from "../lib/utils";
-import { useSize } from "../lib/size-context";
-import { useIcon } from "../lib/icon-context";
-import { SIDEBAR_MENU_POPUP } from "../lib/sidebar-menu-grid";
+import { cn } from "../../lib/utils.ts";
+import { useSize } from "../../lib/size-context.tsx";
+import { useIcon } from "../../lib/icon-context.tsx";
+import { SIDEBAR_MENU_POPUP } from "../../lib/sidebar-menu-grid.ts";
 
 // ---------------------------------------------------------------------------
 // Footer user row: identity anchors the sidebar's outer edge. The 20px

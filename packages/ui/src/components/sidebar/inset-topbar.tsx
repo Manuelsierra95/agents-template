@@ -2,7 +2,7 @@
 
 import { type ReactNode } from "react";
 import { SidebarTrigger, useSidebar } from "@workspace/ui/components/sidebar";
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils.ts";
 
 // ---------------------------------------------------------------------------
 // The main region's topbar. While the sidebar is only PEEKED the trigger

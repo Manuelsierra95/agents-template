@@ -2,8 +2,8 @@
 
 import { type ComponentProps } from "react";
 import { SidebarInput } from "@workspace/ui/components/sidebar";
-import { useSize } from "../lib/size-context";
-import { useIcon } from "../lib/icon-context";
+import { useSize } from "../../lib/size-context.tsx";
+import { useIcon } from "../../lib/icon-context.tsx";
 
 // ---------------------------------------------------------------------------
 // The header's search field, on the menu rows' own rhythm. The leading icon
