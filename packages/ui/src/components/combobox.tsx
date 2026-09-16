@@ -16,24 +16,24 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
-import { useIcon, type IconComponent } from "../lib/icon-context.tsx";
-import { cn } from "../lib/utils.ts";
-import { spring, exitFallbackMs } from "../lib/springs.ts";
-import { useFluidHover } from "../hooks/use-fluid-hover.ts";
+import { useIcon, type IconComponent } from "@workspace/ui/lib/icon-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
+import { useFluidHover } from "@workspace/ui/hooks/use-fluid-hover.ts";
 import {
   useMergeSplitBlocks,
   useSelectionRuns,
   SelectionBackgrounds,
-} from "../hooks/use-merge-split.tsx";
-import { useShape, shapeMap } from "../lib/shape-context.tsx";
-import { SizeProvider, useSize, type SizeVariant } from "../lib/size-context.tsx";
-import { Elevated } from "../lib/elevated.tsx";
+} from "@workspace/ui/hooks/use-merge-split.tsx";
+import { useShape, shapeMap } from "@workspace/ui/lib/shape-context.tsx";
+import { SizeProvider, useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { Elevated } from "@workspace/ui/lib/elevated.tsx";
 import {
   popupMotionClass,
   popupScrollAreaClass,
   popupViewportClass,
   isDisabledRow,
-} from "../lib/popup.ts";
+} from "@workspace/ui/lib/popup.ts";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { FluidHoverHighlight } from "@workspace/ui/components/fluid-hover-highlight";
 

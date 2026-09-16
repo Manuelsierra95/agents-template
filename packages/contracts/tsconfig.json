@@ -4,6 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     // Override base `NodeNext` resolution: this package is consumed by
     // both Node (apps/agent via Eve's bundler) and Next.js Turbopack,
     // neither of which reliably rewrites `./foo.js` → `./foo.ts` for
@@ -13,7 +14,8 @@
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@workspace/contracts/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts"],

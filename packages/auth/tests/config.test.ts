@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { loadAuthConfig } from "../src/config"
+import { loadAuthConfig } from "@workspace/auth/config.ts"
 
 describe("loadAuthConfig", () => {
   it("requires AUTH_SECRET with at least 32 characters", () => {

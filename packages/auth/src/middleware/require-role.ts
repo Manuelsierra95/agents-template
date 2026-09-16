@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from "hono"
 import { HTTPException } from "hono/http-exception"
-import type { AuthVars } from "./require-auth"
-import { hasRole, type Role } from "../permissions/roles"
+import type { AuthVars } from "@workspace/auth/middleware/require-auth.ts"
+import { hasRole, type Role } from "@workspace/auth/permissions/roles.ts"
 
 export function requireRole(
   required: Role | readonly Role[],

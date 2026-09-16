@@ -1,16 +1,16 @@
-export { auth, createAuth, type Auth } from "./auth"
-export { loadAuthConfig, getAuthConfig, type AuthConfig } from "./config"
-export { getMember, getDefaultOrganizationId } from "./membership"
+export { auth, createAuth, type Auth } from "@workspace/auth/auth.ts"
+export { loadAuthConfig, getAuthConfig, type AuthConfig } from "@workspace/auth/config.ts"
+export { getMember, getDefaultOrganizationId } from "@workspace/auth/membership.ts"
 export {
   createRequireAuth,
   requireAuth,
   type AuthVars,
-} from "./middleware/require-auth"
-export { requireRole } from "./middleware/require-role"
-export { ROLE_HIERARCHY, hasRole, type Role } from "./permissions/roles"
+} from "@workspace/auth/middleware/require-auth.ts"
+export { requireRole } from "@workspace/auth/middleware/require-role.ts"
+export { ROLE_HIERARCHY, hasRole, type Role } from "@workspace/auth/permissions/roles.ts"
 export type {
   AuthContext,
   AuthUser,
   AuthSession,
   AuthMember,
-} from "./context/types"
+} from "@workspace/auth/context/types.ts"

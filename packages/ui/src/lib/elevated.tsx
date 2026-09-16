@@ -5,9 +5,9 @@ import {
   type ComponentPropsWithoutRef,
   type ReactNode,
 } from "react";
-import { cn } from "./utils.ts";
-import { useSurface, SurfaceProvider } from "./surface-context.tsx";
-import { surfaceClasses } from "./surface-classes.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useSurface, SurfaceProvider } from "@workspace/ui/lib/surface-context.tsx";
+import { surfaceClasses } from "@workspace/ui/lib/surface-classes.ts";
 
 interface ElevatedProps extends ComponentPropsWithoutRef<"div"> {
   /**

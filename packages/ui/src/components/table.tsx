@@ -12,10 +12,10 @@ import {
   type TdHTMLAttributes,
   type ThHTMLAttributes,
 } from "react";
-import { cn } from "../lib/utils.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { SizeProvider, useSize, type SizeVariant } from "../lib/size-context.tsx";
-import { useFluidHover } from "../hooks/use-fluid-hover.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { SizeProvider, useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { useFluidHover } from "@workspace/ui/hooks/use-fluid-hover.ts";
 import { FluidHoverHighlight } from "@workspace/ui/components/fluid-hover-highlight";
 
 // ── Context ──────────────────────────────────────────────

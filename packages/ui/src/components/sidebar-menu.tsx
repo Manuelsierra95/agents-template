@@ -24,13 +24,13 @@ import {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "../lib/utils.ts";
-import { spring } from "../lib/springs.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { useSize, SizeProvider, type SizeVariant } from "../lib/size-context.tsx";
-import { useProximityHover, type ItemRect } from "../hooks/use-proximity-hover.ts";
-import type { IconComponent } from "../lib/icon-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { spring } from "@workspace/ui/lib/springs.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSize, SizeProvider, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { useProximityHover, type ItemRect } from "@workspace/ui/hooks/use-proximity-hover.ts";
+import type { IconComponent } from "@workspace/ui/lib/icon-context.tsx";
 import { resolveSlotTemplate, slotElement } from "@workspace/ui/components/sidebar-core";
 
 // SSR-safe layout effect (client components still server-render in Next).

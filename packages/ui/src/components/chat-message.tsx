@@ -2,11 +2,11 @@
 
 import { forwardRef, type ReactNode } from "react";
 import { motion, type HTMLMotionProps } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { spring } from "../lib/springs.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { useSize, type SizeVariant } from "../lib/size-context.tsx";
-import { useTouchPrimary } from "../hooks/use-touch-primary.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { spring } from "@workspace/ui/lib/springs.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { useTouchPrimary } from "@workspace/ui/hooks/use-touch-primary.tsx";
 import { FileThumbnail } from "@workspace/ui/components/file-thumbnail";
 
 interface ChatMessageProps

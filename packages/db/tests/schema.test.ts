@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import { readFileSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
-import { user, organization, member } from "../src/schema/index"
+import { user, organization, member } from "@workspace/db/schema/index.ts"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

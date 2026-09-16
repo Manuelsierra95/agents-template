@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { loadDbConfig } from "../src/config"
+import { loadDbConfig } from "@workspace/db/config.ts"
 
 describe("loadDbConfig", () => {
   it("requires DATABASE_URL", () => {

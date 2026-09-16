@@ -4,12 +4,15 @@
     "outDir": "dist",
     "rootDir": ".",
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     // Bundler resolution — see packages/contracts/tsconfig.json for the
     // full rationale.
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@workspace/auth/*": ["./src/*"],
+      "@workspace/db/*": ["../db/src/*"]
     }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"],

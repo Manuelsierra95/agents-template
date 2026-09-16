@@ -14,11 +14,11 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type RefObject,
 } from "react";
-import { cn } from "../lib/utils.ts";
-import { useIcon } from "../lib/icon-context.tsx";
-import { useSize } from "../lib/size-context.tsx";
-import { useSurface } from "../lib/surface-context.tsx";
-import { SURFACE_BG } from "../lib/surface-classes.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx";
+import { useSize } from "@workspace/ui/lib/size-context.tsx";
+import { useSurface } from "@workspace/ui/lib/surface-context.tsx";
+import { SURFACE_BG } from "@workspace/ui/lib/surface-classes.ts";
 
 // ---------------------------------------------------------------------------
 // Search inside a dropdown menu.

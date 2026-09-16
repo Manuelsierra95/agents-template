@@ -14,13 +14,13 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import { cn } from "../lib/utils.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { SizeProvider, useSize, type SizeVariant } from "../lib/size-context.tsx";
-import { useIcon, type IconComponent } from "../lib/icon-context.tsx";
-import { useFluidHover } from "../hooks/use-fluid-hover.ts";
-import { FluidHoverHighlight } from "./fluid-hover-highlight.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { SizeProvider, useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { useIcon, type IconComponent } from "@workspace/ui/lib/icon-context.tsx";
+import { useFluidHover } from "@workspace/ui/hooks/use-fluid-hover.ts";
+import { FluidHoverHighlight } from "@workspace/ui/components/fluid-hover-highlight.tsx";
 
 type LinkProps = {
   href: string;

@@ -13,12 +13,12 @@ import {
   DropdownTrigger,
   DropdownContent,
 } from "@workspace/ui/components/dropdown";
-import { cn } from "../../lib/utils.ts";
-import { useShape } from "../../lib/shape-context.tsx";
-import { useSize } from "../../lib/size-context.tsx";
-import { useIcon } from "../../lib/icon-context.tsx";
-import { fontWeights } from "../../lib/font-weight.ts";
-import { SIDEBAR_MENU_POPUP } from "../../lib/sidebar-menu-grid.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSize } from "@workspace/ui/lib/size-context.tsx";
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { SIDEBAR_MENU_POPUP } from "@workspace/ui/lib/sidebar-menu-grid.ts";
 
 // ---------------------------------------------------------------------------
 // Workspace brand row for a sidebar header.

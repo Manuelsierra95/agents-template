@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   RealtimeEventSchema,
   REALTIME_EVENT_TYPES,
-} from "./schemas"
+} from "@workspace/contracts/realtime/schemas.ts"
 
 /**
  * Smoke-tests for the realtime event contracts.

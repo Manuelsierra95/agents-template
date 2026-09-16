@@ -22,19 +22,19 @@ import {
   Reorder,
   useReducedMotion,
 } from "framer-motion"
-import { cn } from "../lib/utils.ts"
-import { fontWeights } from "../lib/font-weight.ts"
-import { spring } from "../lib/springs.ts"
-import { useShape } from "../lib/shape-context.tsx"
+import { cn } from "@workspace/ui/lib/utils.ts"
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts"
+import { spring } from "@workspace/ui/lib/springs.ts"
+import { useShape } from "@workspace/ui/lib/shape-context.tsx"
 import {
   SizeProvider,
   useSize,
   type SizeVariant,
-} from "../lib/size-context.tsx"
-import { useIcon } from "../lib/icon-context.tsx"
-import { surfaceClasses } from "../lib/surface-classes.ts"
-import { SurfaceProvider } from "../lib/surface-context.tsx"
-import { useFluidHover } from "../hooks/use-fluid-hover.ts"
+} from "@workspace/ui/lib/size-context.tsx"
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx"
+import { surfaceClasses } from "@workspace/ui/lib/surface-classes.ts"
+import { SurfaceProvider } from "@workspace/ui/lib/surface-context.tsx"
+import { useFluidHover } from "@workspace/ui/hooks/use-fluid-hover.ts"
 import { FileThumbnail } from "@workspace/ui/components/file-thumbnail"
 import { Button } from "@workspace/ui/components/button"
 import { Tooltip } from "@workspace/ui/components/tooltip"

@@ -24,7 +24,7 @@ import { eq, and } from "drizzle-orm"
 import {
   createAuth,
   getDefaultOrganizationId,
-} from "../src/index"
+} from "@workspace/auth/index.ts"
 import {
   createDbHandle,
   type DbHandle,

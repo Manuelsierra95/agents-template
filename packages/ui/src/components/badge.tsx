@@ -2,9 +2,9 @@
 
 import { forwardRef, type HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "../lib/utils.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { useSizeVariant } from "../lib/size-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSizeVariant } from "@workspace/ui/lib/size-context.tsx";
 
 const badgeColors = {
   gray: "#a3a3a3",

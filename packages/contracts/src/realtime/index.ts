@@ -17,4 +17,4 @@ export {
   REALTIME_EVENT_TYPES,
   type RealtimeEvent,
   type RealtimeEventType,
-} from "./schemas"
+} from "@workspace/contracts/realtime/schemas.ts"

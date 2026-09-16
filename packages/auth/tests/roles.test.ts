@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 import {
   ROLE_HIERARCHY,
   hasRole,
-} from "../src/permissions/roles"
+} from "@workspace/auth/permissions/roles.ts"
 
 describe("ROLE_HIERARCHY", () => {
   it("defines owner > admin > member", () => {

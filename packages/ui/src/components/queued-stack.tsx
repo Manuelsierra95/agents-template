@@ -5,10 +5,10 @@ import { AnimatePresence, motion, useAnimationControls } from "framer-motion";
 import { FileThumbnail } from "@workspace/ui/components/file-thumbnail";
 import { Tooltip } from "@workspace/ui/components/tooltip";
 import { type QueuedMessage } from "@workspace/ui/components/input-message";
-import { useIcon } from "../lib/icon-context.tsx";
-import { useShape } from "../lib/shape-context.tsx";
-import { useSizeVariant } from "../lib/size-context.tsx";
-import { spring } from "../lib/springs.ts";
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { spring } from "@workspace/ui/lib/springs.ts";
 
 // ---------------------------------------------------------------------------
 // Sonner-style queued-message stack, shared by the InputMessage docs demos

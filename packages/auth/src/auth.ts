@@ -7,8 +7,8 @@ import {
   eq,
   type DbClient,
 } from "@workspace/db"
-import { loadAuthConfig } from "./config"
-import { getDefaultOrganizationId } from "./membership"
+import { loadAuthConfig } from "@workspace/auth/config.ts"
+import { getDefaultOrganizationId } from "@workspace/auth/membership.ts"
 
 /**
  * Auto-provision a personal workspace for every newly-registered user,

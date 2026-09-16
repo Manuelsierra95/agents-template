@@ -10,10 +10,10 @@ import {
 } from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import type { IconComponent } from "../lib/icon-context.tsx"
-import { cn } from "../lib/utils.ts"
-import { useShape } from "../lib/shape-context.tsx"
-import { useSizeVariant } from "../lib/size-context.tsx"
+import type { IconComponent } from "@workspace/ui/lib/icon-context.tsx"
+import { cn } from "@workspace/ui/lib/utils.ts"
+import { useShape } from "@workspace/ui/lib/shape-context.tsx"
+import { useSizeVariant } from "@workspace/ui/lib/size-context.tsx"
 
 const buttonVariants = cva(
   [

@@ -2,15 +2,15 @@ import type { MiddlewareHandler } from "hono"
 import { HTTPException } from "hono/http-exception"
 import type { DbClient } from "@workspace/db"
 import { db as defaultDb } from "@workspace/db"
-import type { Auth } from "../auth"
-import { getMember } from "../membership"
+import type { Auth } from "@workspace/auth/auth.ts"
+import { getMember } from "@workspace/auth/membership.ts"
 import type {
 	AuthContext,
 	AuthUser,
 	AuthSession,
 	AuthMember,
-} from "../context/types"
-import { auth as defaultAuth } from "../auth"
+} from "@workspace/auth/context/types.ts"
+import { auth as defaultAuth } from "@workspace/auth/auth.ts"
 
 export type AuthVars = { readonly auth: AuthContext }
 

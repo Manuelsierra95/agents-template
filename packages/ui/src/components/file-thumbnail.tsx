@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { cn } from "../lib/utils.ts";
-import { useShape } from "../lib/shape-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
 
 // ─── Lazy pdfjs loader ────────────────────────────────────────────────────
 // Imports pdfjs-dist on first PDF, caches the module, and points the worker

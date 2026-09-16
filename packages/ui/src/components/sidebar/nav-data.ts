@@ -1,4 +1,4 @@
-import { type IconName } from "../../lib/icon-context.tsx";
+import { type IconName } from "@workspace/ui/lib/icon-context.tsx";
 
 // ---------------------------------------------------------------------------
 // Seed navigation data — replace with your own. Icons are keys into the

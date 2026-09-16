@@ -1,1 +1,1 @@
-export * from "./auth"
+export * from "@workspace/db/schema/auth.ts"

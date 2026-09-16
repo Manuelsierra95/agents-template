@@ -72,9 +72,9 @@ export { Button, type ButtonProps, type ButtonSize } from "@workspace/ui/compone
 export { Tooltip, TooltipProvider, TooltipPortalContainer } from "@workspace/ui/components/tooltip"
 export { ScrollArea } from "@workspace/ui/components/scroll-area"
 
-export { surfaceClasses, surfaceHoverClasses } from "../lib/surface-classes.ts"
-export { spring } from "../lib/springs.ts"
-export { useIcon, type IconComponent, type IconName } from "../lib/icon-context.tsx"
+export { surfaceClasses, surfaceHoverClasses } from "@workspace/ui/lib/surface-classes.ts"
+export { spring } from "@workspace/ui/lib/springs.ts"
+export { useIcon, type IconComponent, type IconName } from "@workspace/ui/lib/icon-context.tsx"
 
 export {
   Dropdown,

@@ -1,7 +1,7 @@
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
-import * as schema from "./schema/index"
-import { loadDbConfig } from "./config"
+import * as schema from "@workspace/db/schema/index.ts"
+import { loadDbConfig } from "@workspace/db/config.ts"
 
 export type DbClient = PostgresJsDatabase<typeof schema>
 export type Sql = ReturnType<typeof postgres>

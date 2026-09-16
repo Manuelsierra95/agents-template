@@ -28,9 +28,9 @@ import {
   SelectItem,
 } from "@workspace/ui/components/select";
 import { InputGroup, InputField } from "@workspace/ui/components/input-group";
-import { useIcons, type IconName } from "../../lib/icon-context.tsx";
-import { cn } from "../../lib/utils.ts";
-import { fontWeights } from "../../lib/font-weight.ts";
+import { useIcons, type IconName } from "@workspace/ui/lib/icon-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
 
 // ---------------------------------------------------------------------------
 // A settings dialog: the `xl` Dialog as a canvas, a non-collapsing Sidebar

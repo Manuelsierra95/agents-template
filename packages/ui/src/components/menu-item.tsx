@@ -10,12 +10,12 @@ import {
   type ReactElement,
   type ReactNode,
 } from "react";
-import type { IconComponent } from "../lib/icon-context.tsx";
+import type { IconComponent } from "@workspace/ui/lib/icon-context.tsx";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { shapeMap } from "../lib/shape-context.tsx";
-import { useSize } from "../lib/size-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { shapeMap } from "@workspace/ui/lib/shape-context.tsx";
+import { useSize } from "@workspace/ui/lib/size-context.tsx";
 
 // MenuItem is only used inside Dropdown, which opts out of the global pill
 // shape — see dropdown.tsx for the rationale.

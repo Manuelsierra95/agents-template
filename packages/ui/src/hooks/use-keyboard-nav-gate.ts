@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, type KeyboardEvent } from "react";
-import { POPUP_NAV_KEYS } from "../lib/popup.ts";
+import { POPUP_NAV_KEYS } from "@workspace/ui/lib/popup.ts";
 
 /**
  * Gates a popup's keyboard focus ring on keyboard use.

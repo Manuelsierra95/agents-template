@@ -7,11 +7,17 @@
   "exports": {
     ".": "./src/index.ts",
     "./realtime": "./src/realtime/index.ts",
+    "./realtime/*": "./src/realtime/*",
     "./agents": "./src/agents/index.ts",
+    "./agents/*": "./src/agents/*",
     "./appointments": "./src/appointments/index.ts",
+    "./appointments/*": "./src/appointments/*",
     "./catalog": "./src/catalog/index.ts",
+    "./catalog/*": "./src/catalog/*",
     "./notifications": "./src/notifications/index.ts",
-    "./playground": "./src/playground/index.ts"
+    "./notifications/*": "./src/notifications/*",
+    "./playground": "./src/playground/index.ts",
+    "./playground/*": "./src/playground/*"
   },
   "scripts": {
     "lint": "eslint .",

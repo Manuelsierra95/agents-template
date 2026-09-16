@@ -7,8 +7,8 @@ export {
   type DbClient,
   type DbHandle,
   type Sql,
-} from "./client"
-export { loadDbConfig, getDbConfig, type DbConfig } from "./config"
+} from "@workspace/db/client.ts"
+export { loadDbConfig, getDbConfig, type DbConfig } from "@workspace/db/config.ts"
 export {
   user,
   session,
@@ -25,8 +25,8 @@ export {
   type Organization,
   type Member,
   type Invitation,
-} from "./schema/index"
-export * as schema from "./schema/index"
+} from "@workspace/db/schema/index.ts"
+export * as schema from "@workspace/db/schema/index.ts"
 export {
   and,
   eq,

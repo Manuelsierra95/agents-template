@@ -10,13 +10,13 @@ import {
 } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { motion } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { useIcon } from "../lib/icon-context.tsx";
-import { spring } from "../lib/springs.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { useSize, useSizeVariant } from "../lib/size-context.tsx";
-import { SurfaceProvider, useSurface } from "../lib/surface-context.tsx";
-import { surfaceClasses } from "../lib/surface-classes.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx";
+import { spring } from "@workspace/ui/lib/springs.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSize, useSizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { SurfaceProvider, useSurface } from "@workspace/ui/lib/surface-context.tsx";
+import { surfaceClasses } from "@workspace/ui/lib/surface-classes.ts";
 import { Button } from "@workspace/ui/components/button";
 
 const DIALOG_OFFSET = 4;

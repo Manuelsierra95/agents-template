@@ -19,13 +19,13 @@ import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 // SSR-safe layout effect (client components still server-render in Next).
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
-import { cn } from "../lib/utils.ts";
-import { useIcon } from "../lib/icon-context.tsx";
-import { spring } from "../lib/springs.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { useFluidHover } from "../hooks/use-fluid-hover.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { SizeProvider, useSize, type SizeVariant } from "../lib/size-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx";
+import { spring } from "@workspace/ui/lib/springs.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { useFluidHover } from "@workspace/ui/hooks/use-fluid-hover.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { SizeProvider, useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
 import { FluidHoverHighlight } from "@workspace/ui/components/fluid-hover-highlight";
 
 // ─── Contexts ────────────────────────────────────────────────────────────────

@@ -22,14 +22,14 @@ import {
   type Ref,
 } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { spring, exitFallbackMs } from "../lib/springs.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { useShape } from "../lib/shape-context.tsx";
-import { useSize, useSizeVariant } from "../lib/size-context.tsx";
-import { useIcon } from "../lib/icon-context.tsx";
-import { useSurface, SurfaceProvider } from "../lib/surface-context.tsx";
-import { surfaceClasses } from "../lib/surface-classes.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { useShape } from "@workspace/ui/lib/shape-context.tsx";
+import { useSize, useSizeVariant } from "@workspace/ui/lib/size-context.tsx";
+import { useIcon } from "@workspace/ui/lib/icon-context.tsx";
+import { useSurface, SurfaceProvider } from "@workspace/ui/lib/surface-context.tsx";
+import { surfaceClasses } from "@workspace/ui/lib/surface-classes.ts";
 import { Button, type ButtonProps } from "@workspace/ui/components/button";
 import { Tooltip } from "@workspace/ui/components/tooltip";
 

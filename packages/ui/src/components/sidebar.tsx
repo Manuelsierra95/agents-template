@@ -12,11 +12,11 @@ import {
 } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { motion, useReducedMotion } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { spring, exitFallbackMs } from "../lib/springs.ts";
-import { useSurface, SurfaceProvider } from "../lib/surface-context.tsx";
-import { surfaceClasses } from "../lib/surface-classes.ts";
-import { ScrollArea } from "./scroll-area.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
+import { useSurface, SurfaceProvider } from "@workspace/ui/lib/surface-context.tsx";
+import { surfaceClasses } from "@workspace/ui/lib/surface-classes.ts";
+import { ScrollArea } from "@workspace/ui/components/scroll-area.tsx";
 import {
   useSidebar,
   SidebarShell,
@@ -368,9 +368,9 @@ export type {
   SidebarMenuSubProps,
   SidebarMenuSubItemProps,
   SidebarMenuSubButtonProps,
-} from "./sidebar-menu.tsx";
+} from "@workspace/ui/components/sidebar-menu.tsx";
 
-export { Button, type ButtonProps, type ButtonSize } from "./button.tsx";
+export { Button, type ButtonProps, type ButtonSize } from "@workspace/ui/components/button.tsx";
 export {
   Card,
   CardGroup,
@@ -390,7 +390,7 @@ export {
   type CardLogo,
   type CardButtonProps,
   type CardButtonVariant,
-} from "./card.tsx";
+} from "@workspace/ui/components/card.tsx";
 export {
   Dropdown,
   DropdownLabel,
@@ -409,14 +409,14 @@ export {
   type DropdownTriggerProps,
   type DropdownContentProps,
   type DropdownSearchProps,
-} from "./dropdown.tsx";
-export { MenuItem } from "./menu-item.tsx";
-export { Tooltip, TooltipProvider, TooltipPortalContainer } from "./tooltip.tsx";
-export { surfaceClasses, surfaceHoverClasses } from "../lib/surface-classes.ts";
-export { useIcon, type IconComponent, type IconName } from "../lib/icon-context.tsx";
-export { IconProvider, useIcons } from "../lib/icon-context.tsx";
-export { ScrollArea } from "./scroll-area.tsx";
-export { spring, exitFallbackMs } from "../lib/springs.ts";
+} from "@workspace/ui/components/dropdown.tsx";
+export { MenuItem } from "@workspace/ui/components/menu-item.tsx";
+export { Tooltip, TooltipProvider, TooltipPortalContainer } from "@workspace/ui/components/tooltip.tsx";
+export { surfaceClasses, surfaceHoverClasses } from "@workspace/ui/lib/surface-classes.ts";
+export { useIcon, type IconComponent, type IconName } from "@workspace/ui/lib/icon-context.tsx";
+export { IconProvider, useIcons } from "@workspace/ui/lib/icon-context.tsx";
+export { ScrollArea } from "@workspace/ui/components/scroll-area.tsx";
+export { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
 export {
   ShapeProvider,
   useShape,
@@ -424,7 +424,7 @@ export {
   shapeMap,
   type ShapeVariant,
   type ShapeClasses,
-} from "../lib/shape-context.tsx";
+} from "@workspace/ui/lib/shape-context.tsx";
 export {
   SizeProvider,
   useSize,
@@ -437,6 +437,6 @@ export {
   type SizeClasses,
   type TypeScaleRole,
   type TypeScaleStep,
-} from "../lib/size-context.tsx";
-export { SurfaceProvider, useSurface } from "../lib/surface-context.tsx";
-export { Elevated } from "../lib/elevated.tsx";
+} from "@workspace/ui/lib/size-context.tsx";
+export { SurfaceProvider, useSurface } from "@workspace/ui/lib/surface-context.tsx";
+export { Elevated } from "@workspace/ui/lib/elevated.tsx";

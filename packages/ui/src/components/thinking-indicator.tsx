@@ -2,9 +2,9 @@
 
 import { forwardRef, useState, useEffect, type HTMLAttributes } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { fontWeights } from "../lib/font-weight.ts";
-import { useSize, type SizeVariant } from "../lib/size-context.tsx";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
+import { useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";
 
 const circleA =
   "M 12 8 C 14.21 8 16 9.79 16 12 C 16 14.21 14.21 16 12 16 C 9.79 16 8 14.21 8 12 C 8 9.79 9.79 8 12 8 Z";

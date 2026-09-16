@@ -6,9 +6,9 @@ import {
   useReducedMotion,
   type Transition,
 } from "framer-motion";
-import { cn } from "../lib/utils.ts";
-import { spring } from "../lib/springs.ts";
-import type { ItemRect } from "../hooks/use-fluid-hover.ts";
+import { cn } from "@workspace/ui/lib/utils.ts";
+import { spring } from "@workspace/ui/lib/springs.ts";
+import type { ItemRect } from "@workspace/ui/hooks/use-fluid-hover.ts";
 
 // ---------------------------------------------------------------------------
 // The one hover highlight every fluid hover list renders: an absolutely

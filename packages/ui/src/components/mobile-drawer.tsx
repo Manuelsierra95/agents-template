@@ -3,9 +3,9 @@
 import { useEffect, useRef, type ReactNode, type RefObject } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { motion } from "framer-motion";
-import { spring, exitFallbackMs } from "../lib/springs.ts";
-import { useSurface, SurfaceProvider } from "../lib/surface-context.tsx";
-import { surfaceClasses } from "../lib/surface-classes.ts";
+import { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
+import { useSurface, SurfaceProvider } from "@workspace/ui/lib/surface-context.tsx";
+import { surfaceClasses } from "@workspace/ui/lib/surface-classes.ts";
 
 // Built on Base UI Dialog rather than Base UI Drawer: Drawer's
 // swipe-to-dismiss writes inline `transform` + `--drawer-swipe-movement-*`

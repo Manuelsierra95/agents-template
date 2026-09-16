@@ -8,7 +8,7 @@ import {
   createRequireAuth,
   requireRole,
   type AuthVars,
-} from "../src/index"
+} from "@workspace/auth/index.ts"
 import {
   createDbHandle,
   type DbHandle,
