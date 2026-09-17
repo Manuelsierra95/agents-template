@@ -2,7 +2,7 @@
 
 import { type ReactNode } from "react"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
-import { MotionConfig } from "framer-motion"
+import { MotionConfig } from "motion/react"
 import { Toaster } from "sonner"
 import { ThemeProvider } from "@/components/theme-provider"
 import { QueryProvider } from "@/providers/query-provider"
