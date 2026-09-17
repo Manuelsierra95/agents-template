@@ -1,6 +1,6 @@
 import { Field } from "@base-ui/react/field";
 
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "@workspace/ui/lib/utils.ts";
 
 function Label({
   className,

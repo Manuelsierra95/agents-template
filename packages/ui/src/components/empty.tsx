@@ -1,4 +1,4 @@
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "@workspace/ui/lib/utils.ts";
 
 function Empty({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
