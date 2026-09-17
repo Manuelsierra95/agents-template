@@ -21,7 +21,7 @@ import {
   type HTMLAttributes,
   type Ref,
 } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
 import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
@@ -371,7 +371,7 @@ const SidebarProvider = forwardRef<HTMLDivElement, SidebarProviderProps>(
             else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
           }}
           data-slot="sidebar-wrapper"
-          className={cn("group/sidebar-wrapper relative flex min-h-svh w-full", className)}
+          className={cn("group/sidebar-wrapper relative flex h-svh w-full overflow-hidden p-2", className)}
           style={
             {
               "--sidebar-width": width,
@@ -493,7 +493,7 @@ const BREAKPOINT_HIDDEN: Record<number, string> = {
   1280: "max-xl:hidden max-xl:opacity-0 max-xl:duration-160 xl:duration-240 xl:starting:opacity-0",
 };
 
-// Props framer-motion redefines with incompatible signatures; they must not
+// Props motion redefines with incompatible signatures; they must not
 // be forwarded onto a motion.div.
 type MotionSafeDivProps = Omit<
   HTMLAttributes<HTMLDivElement>,
@@ -664,7 +664,7 @@ const SidebarShell = forwardRef<HTMLDivElement, SidebarShellProps>(
           // No bare `group` here: an unnamed group on the whole rail would
           // fire every descendant's group-hover (Button fills, icon strokes)
           // on rail hover. Named groups (menu-item etc.) handle row states.
-          "peer shrink-0 sticky top-0 h-svh",
+          "peer shrink-0 sticky top-0 h-full",
           // While peek is armed the 0-width shell must not clip the edge
           // strip or the overlay card — and the shell must rise above the
           // inset (a later sibling) so the card paints over it. Pinning from
@@ -1097,24 +1097,27 @@ export type SidebarInsetProps = HTMLAttributes<HTMLElement>;
 
 const SidebarInset = forwardRef<HTMLElement, SidebarInsetProps>(
   ({ className, ...props }, ref) => {
-    const shape = useShape();
     return (
       <main
         ref={ref}
         data-slot="sidebar-inset"
         className={cn(
-          "relative flex min-h-0 w-full min-w-0 flex-1 flex-col bg-background",
-          "peer-data-[variant=inset]:m-2 peer-data-[variant=inset]:peer-data-[side=left]:ml-0 peer-data-[variant=inset]:peer-data-[side=right]:mr-0",
-          // With the rail collapsed away, restore the sidebar-side margin so
-          // the card keeps symmetric insets.
-          "peer-data-[variant=inset]:peer-data-[state=collapsed]:peer-data-[side=left]:ml-2 peer-data-[variant=inset]:peer-data-[state=collapsed]:peer-data-[side=right]:mr-2",
+          "relative flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden",
+          // Chrome: only paints when the parent <Sidebar> uses variant="inset".
+          // Flat variants keep the raw bg-background. Moved from
+          // WorkspacePane so the chrome lives next to the padding that owns
+          // it and so the scroll stays contained inside the inset.
+          "peer-data-[variant=inset]:rounded-3xl peer-data-[variant=inset]:bg-surface-2 peer-data-[variant=inset]:shadow-surface-2",
+          // The padding that gives the inset breathing room lives on
+          // SidebarProvider (p-2), not as margin here — a margin-based gap
+          // would push the inset's bottom edge past the wrapper's
+          // `overflow-hidden` clip and eat the bottom inset. Negative
+          // margins on the rail side cancel the wrapper's padding so the
+          // card sits flush against the rail when expanded; with the rail
+          // collapsed the wrapper's padding becomes the visible inset.
+          "peer-data-[variant=inset]:peer-data-[side=left]:-ml-2 peer-data-[variant=inset]:peer-data-[state=collapsed]:peer-data-[side=left]:ml-0",
+          "peer-data-[variant=inset]:peer-data-[side=right]:-mr-2 peer-data-[variant=inset]:peer-data-[state=collapsed]:peer-data-[side=right]:mr-0",
           "transition-[margin] duration-80",
-          // Container radius follows the shape system (literal classes so
-          // Tailwind's scanner emits both).
-          shape.bgRadius >= 20
-            ? "peer-data-[variant=inset]:rounded-3xl"
-            : "peer-data-[variant=inset]:rounded-xl",
-          "peer-data-[variant=inset]:bg-surface-2 peer-data-[variant=inset]:shadow-surface-2",
           className
         )}
         {...props}

@@ -59,7 +59,7 @@ export function ChatComposer({
   return (
     <section
       aria-label={ariaLabel ?? "Enviar mensaje"}
-      className="border-t border-line/60 bg-canvas/40 p-2.5"
+      className="shrink-0 border-t border-line/60 bg-canvas/40 p-2.5"
     >
       <InputMessage
         size="compact"
