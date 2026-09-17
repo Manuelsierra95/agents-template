@@ -6,27 +6,6 @@ import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SIDEBAR_COOKIE_NAME } from "@workspace/ui/components/sidebar"
 
 /**
- * Auth-gated layout: reads cookies via `getServerSession()` and may
- * `redirect("/login")`. With `cacheComponents: true`, Next.js tries to
- * prerender a static shell for Instant Navigation validation — but
- * that validation runs *without* a real session, so the redirect
- * throws `NEXT_REDIRECT` and breaks validation
- * (`Route "/dashboard": Could not validate instant`).
- *
- * Setting `instant = false` opts the segment out of the static-shell
- * validation. Per the Next.js 16 docs
- * (`docs/app/guides/authentication-with-cache-components`):
- *
- *   > Set `export const instant = false` on the page or layout to let
- *   > it keep blocking on the server. You don't have to resolve them
- *   > all before shipping.
- *
- * Sibling navigations inside `/dashboard/*` are still validated
- * normally — only the entry into the gated layout is exempt.
- */
-export const instant = false
-
-/**
  * Authenticated app shell for `/dashboard/*`.
  *
  * Server-side auth gate: redirects to `/login` if no session exists.

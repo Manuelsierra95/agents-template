@@ -9,14 +9,6 @@ export const metadata = {
   title: "Iniciar sesión — Asistant",
 }
 
-/**
- * `instant = false` — when an already-authenticated user visits
- * `/login` we `redirect("/dashboard")`. That redirect would break the
- * Instant Navigation static-shell validation, so we opt the segment
- * out (same pattern as the auth-gated `/dashboard/*` tree).
- */
-export const instant = false
-
 export default async function LoginPage() {
   const session = await getServerSession()
   if (session) {

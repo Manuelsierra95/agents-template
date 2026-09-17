@@ -23,7 +23,7 @@ export default function AppError({
 
   return (
     <WorkspacePane>
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 overflow-auto p-6 text-center">
         <h1 className="text-ink text-[22px] font-semibold tracking-[-0.01em]">
           Something went wrong
         </h1>

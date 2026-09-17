@@ -10,7 +10,7 @@ import { WorkspacePane } from "@/components/layout/workspace-pane"
 export default function AppNotFound() {
   return (
     <WorkspacePane>
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-4 overflow-auto p-6 text-center">
         <p className="text-ink-3 font-mono text-[11px] tracking-wide uppercase">
           404
         </p>

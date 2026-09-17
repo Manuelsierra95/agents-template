@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   // (React `<Activity>`-preserved state across navigations) — no extra
   // experimental flag required.
   cacheComponents: true,
+  partialPrefetching: true,
 
   transpilePackages: ["@workspace/ui"],
 

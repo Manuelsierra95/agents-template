@@ -9,13 +9,6 @@ export const metadata = {
   title: "Crear cuenta — Asistant",
 }
 
-/**
- * `instant = false` — when an already-authenticated user visits
- * `/sign-up` we `redirect("/dashboard")`. Opts the segment out of
- * static-shell validation, matching the `/login` page above.
- */
-export const instant = false
-
 export default async function SignUpPage() {
   const session = await getServerSession()
   if (session) {

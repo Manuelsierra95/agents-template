@@ -19,6 +19,8 @@ export type { InputMessageProps } from "@workspace/ui/components/input-message"
 export { ThinkingIndicator } from "@workspace/ui/components/thinking-indicator"
 export type { ThinkingIndicatorProps } from "@workspace/ui/components/thinking-indicator"
 
+export { ChatSkeleton } from "@/features/chat/components/chat-skeleton"
+
 export {
 	ThinkingSteps,
 	ThinkingStepsHeader,

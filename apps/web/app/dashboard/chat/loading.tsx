@@ -1,21 +1,16 @@
 import { WorkspacePane } from "@/components/layout/workspace-pane"
+import { ChatSkeleton } from "@/features/chat/components/chat-skeleton"
 
 /**
- * Route-level skeleton for `/dashboard/chat`. Mirrors the final layout
- * (message list + composer) so there is no layout shift when the
- * client component hydrates and starts owning the state.
+ * Route-level skeleton for `/dashboard/chat`. The actual placeholder
+ * shapes live in `ChatSkeleton` so the layout (message list + composer)
+ * is mirrored in one place and stays in lockstep with the rest of the
+ * skeletons (shared `Skeleton` primitive).
  */
 export default function Loading() {
 	return (
 		<WorkspacePane>
-			<div className="flex min-h-0 flex-1 flex-col gap-3 p-4">
-				<div className="flex min-h-0 flex-1 flex-col gap-3">
-					<div className="ml-auto h-9 w-48 animate-pulse rounded-2xl bg-muted/60" />
-					<div className="h-9 w-64 animate-pulse rounded-2xl bg-muted/60" />
-					<div className="ml-auto h-9 w-40 animate-pulse rounded-2xl bg-muted/60" />
-				</div>
-				<div className="h-12 animate-pulse rounded-xl bg-muted/60" />
-			</div>
+			<ChatSkeleton />
 		</WorkspacePane>
 	)
 }
