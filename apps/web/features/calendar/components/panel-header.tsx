@@ -1,0 +1,182 @@
+import { cn } from "@workspace/ui/lib/utils";
+import { format, isToday } from "date-fns";
+import { motion } from "motion/react";
+
+import { useDock } from "@/components/workspace/dock-context";
+
+import { useEventColor } from "./colors";
+import {
+  ALLDAY_BAND_PADDING,
+  ALLDAY_COLLAPSED_LANES,
+  ALLDAY_EVENT_GAP,
+  ALLDAY_EVENT_HEIGHT,
+  type AllDayEventLayout,
+  dayColsTemplate,
+  dayKey,
+  HEADER_DATE_HEIGHT,
+} from "./lib";
+import { press } from "./motion";
+import { RevealFlash, type Reveal } from "./today-pulse";
+
+interface PanelHeaderProps {
+  days: Date[];
+  allDayEvents: AllDayEventLayout[];
+  allDayHeight: number;
+  allDayExpanded: boolean;
+  /** The active reveal target; pulses today's date pill when it's the target
+   * (a Today jump) or an all-day card matching the revealed item. */
+  reveal: Reveal;
+}
+
+/** Weekday/date row plus the all-day band for a single day or week page.
+ * Contains no gutter column — the time gutter is pinned as a sibling. */
+export function PanelHeader({
+  days,
+  allDayEvents,
+  allDayHeight,
+  allDayExpanded,
+  reveal,
+}: PanelHeaderProps) {
+  const { open } = useDock();
+  const colorFor = useEventColor();
+  const template = dayColsTemplate(days.length);
+  // Absolutely positioned cards don't contribute to the rail's scroll height, so
+  // when expanded past the visible cap we'd have no way to reach the lower lanes.
+  // A zero-width spacer sized to the rendered lane stack restores that scroll.
+  const renderedLaneCount = allDayEvents.reduce((max, { lane }) => {
+    if (!allDayExpanded && lane >= ALLDAY_COLLAPSED_LANES) return max;
+    return Math.max(max, lane + 1);
+  }, 0);
+  const railContentHeight =
+    renderedLaneCount === 0
+      ? 0
+      : ALLDAY_BAND_PADDING * 2 +
+        renderedLaneCount * ALLDAY_EVENT_HEIGHT +
+        (renderedLaneCount - 1) * ALLDAY_EVENT_GAP;
+  return (
+    <div
+      className="relative flex flex-col border-b border-border bg-calendar-header backdrop-blur-xs transition-[height] duration-200 motion-reduce:transition-none"
+      style={{ height: HEADER_DATE_HEIGHT + allDayHeight }}
+    >
+      {/* Column dividers as one continuous overlay so the lines run the full
+       * header height — through both the date row and the all-day band —
+       * rather than stopping where each row's own borders end. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 grid"
+        style={{ gridTemplateColumns: template }}
+      >
+        {days.map((day) => (
+          <div key={day.getTime()} className="relative">
+            <span
+              className="absolute inset-y-0 left-0 w-px"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to bottom, transparent 0, var(--border) 32px, var(--border) 100%)",
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div
+        className="relative grid flex-1"
+        style={{ gridTemplateColumns: template }}
+      >
+        {days.map((day) => {
+          const today = isToday(day);
+          return (
+            <div
+              key={day.getTime()}
+              className="flex items-baseline gap-1.5 px-2 py-2"
+            >
+              <span
+                className={cn(
+                  "text-[11px] font-medium tracking-wide uppercase",
+                  today ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {format(day, "EEE")}
+              </span>
+              {today ? (
+                <span className="relative flex size-7 items-center justify-center self-center overflow-hidden rounded-full bg-primary text-lg font-semibold text-primary-foreground">
+                  <RevealFlash
+                    reveal={reveal}
+                    targetId={dayKey(day)}
+                    className="z-0 bg-[color-mix(in_oklab,white_55%,transparent)]"
+                  />
+                  <span className="relative z-10">{format(day, "d")}</span>
+                </span>
+              ) : (
+                <span className="text-lg font-semibold">{format(day, "d")}</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div
+        id="calendar-all-day-rail"
+        className={cn(
+          // The height tracks the visible days' all-day lanes, so it eases both
+          // when they change under a scroll and when the expand/collapse toggle
+          // fires. Cards are positioned absolutely (rather than on a grid) so a
+          // card's width can ease with a CSS transition when its span clamps at
+          // the scroll edge — grid-column placement can't be transitioned.
+          "relative transition-[height] duration-200 motion-reduce:transition-none",
+          allDayExpanded ? "overflow-y-auto" : "overflow-hidden",
+        )}
+        style={{ height: allDayHeight }}
+      >
+        <div
+          aria-hidden
+          className="w-0 shrink-0"
+          style={{ height: railContentHeight }}
+        />
+        {allDayEvents.map(({ event, startIdx, endIdx, lane }) => {
+          if (!allDayExpanded && lane >= ALLDAY_COLLAPSED_LANES) return null;
+          const colorVar = colorFor(event);
+          // Columns are equal 1fr tracks, so one day is `100% / days.length` of
+          // the rail; the ±4px insets reproduce the old `mx-1` gutter between
+          // adjacent cards.
+          const colPct = `(100% / ${days.length})`;
+          return (
+            <motion.button
+              type="button"
+              key={event._id}
+              data-event
+              onClick={() => open({ kind: "event", event })}
+              whileTap={press.whileTap}
+              transition={{ scale: press.transition }}
+              // `left` and `width` ease so both edges animate as the span clamps
+              // at the scroll boundary. `top` never eases (it only moves on lane
+              // changes, which should snap). During a buffer recenter the strip
+              // sets `data-recenter`, which suppresses this so cards don't slide
+              // when their day window is rebuilt out from under them.
+              className="absolute flex items-center overflow-hidden rounded-md py-0.5 pr-2 pl-2.5 text-left text-xs font-medium ring-1 ring-border/60 transition-[left,width] duration-200 group-data-[recenter]/strip:transition-none motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              style={{
+                left: `calc(${colPct} * ${startIdx} + 4px)`,
+                width: `calc(${colPct} * ${endIdx - startIdx + 1} - 8px)`,
+                top:
+                  ALLDAY_BAND_PADDING +
+                  lane * (ALLDAY_EVENT_HEIGHT + ALLDAY_EVENT_GAP),
+                height: ALLDAY_EVENT_HEIGHT,
+                backgroundColor: `color-mix(in oklab, var(${colorVar}) 22%, var(--card))`,
+              }}
+            >
+              <RevealFlash
+                reveal={reveal}
+                targetId={[event._id, event.providerEventId]}
+                className="rounded-md bg-[color-mix(in_oklab,var(--primary)_45%,transparent)]"
+              />
+              <span
+                aria-hidden
+                className="absolute top-1 bottom-1 left-1 w-[3px] rounded-full"
+                style={{ backgroundColor: `var(${colorVar})` }}
+              />
+              <span className="truncate">{event.summary ?? "(No title)"}</span>
+            </motion.button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

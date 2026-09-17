@@ -1,0 +1,167 @@
+import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import { cn } from "@workspace/ui/lib/utils";
+import { TZDate } from "@date-fns/tz";
+import {
+  addDays,
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  isToday,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
+import { type ReactElement, useMemo, useState } from "react";
+
+import { usePreferences } from "@/components/workspace/preferences-context";
+
+import { zoned, type WeekStart } from "./lib";
+
+/** Single-letter weekday headers, in the user's week order. */
+function weekdayLetters(weekStartsOn: WeekStart): string[] {
+  const ref = startOfWeek(new Date(), { weekStartsOn });
+  return Array.from({ length: 7 }, (_, i) => format(addDays(ref, i), "EEEEE"));
+}
+
+interface DayPickerProps {
+  /** The currently selected day (any instant within it). */
+  selectedMs: number;
+  /** Called with local midnight of the chosen day. */
+  onSelect: (dayMs: number) => void;
+  /** Days before this (local midnight) are disabled; e.g. a recurrence end. */
+  minMs?: number;
+  side?: "top" | "bottom";
+  children: ReactElement<Record<string, unknown>>;
+}
+
+/** A single-day calendar picker in a popover. Mirrors `MonthPicker`'s look but
+ * selects one day rather than snapping to a week. */
+export function DayPicker({
+  selectedMs,
+  onSelect,
+  minMs,
+  side = "bottom",
+  children,
+}: DayPickerProps) {
+  const { weekStartsOn, timeZone } = usePreferences();
+  const [open, setOpen] = useState(false);
+  // Working-zone dates throughout, so grid days and "today" agree with the
+  // calendar behind the popover.
+  const [viewMonth, setViewMonth] = useState(
+    () => startOfMonth(zoned(selectedMs, timeZone)) as TZDate,
+  );
+
+  const gridStart = startOfWeek(startOfMonth(viewMonth), { weekStartsOn });
+  const gridEnd = endOfWeek(endOfMonth(viewMonth), { weekStartsOn });
+  const weekdays = useMemo(() => weekdayLetters(weekStartsOn), [weekStartsOn]);
+  const days = eachDayOfInterval({ start: gridStart, end: gridEnd });
+  const selectedDate = zoned(selectedMs, timeZone);
+
+  const select = (day: Date) => {
+    onSelect(day.getTime());
+    setOpen(false);
+  };
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next)
+          setViewMonth(
+            startOfMonth(zoned(selectedMs, timeZone)) as TZDate,
+          );
+      }}
+    >
+      <PopoverTrigger render={children} />
+      <PopoverContent
+        align="start"
+        side={side}
+        sideOffset={8}
+        className="w-auto rounded-2xl p-3"
+      >
+        <div className="mb-2 flex items-center justify-between gap-4 px-1">
+          <span className="text-sm font-semibold">
+            {format(viewMonth, "MMMM yyyy")}
+          </span>
+          <div className="flex items-center gap-1">
+            <MonthNav
+              icon={ArrowUp01Icon}
+              label="Previous month"
+              onClick={() => setViewMonth((m) => addMonths(m, -1))}
+            />
+            <MonthNav
+              icon={ArrowDown01Icon}
+              label="Next month"
+              onClick={() => setViewMonth((m) => addMonths(m, 1))}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-7 gap-y-1">
+          {weekdays.map((label, i) => (
+            <span
+              key={i}
+              className="flex size-8 items-center justify-center text-xs font-medium text-muted-foreground"
+            >
+              {label}
+            </span>
+          ))}
+          {days.map((day) => {
+            const inMonth = isSameMonth(day, viewMonth);
+            const today = isToday(day);
+            const selected = isSameDay(day, selectedDate);
+            const disabled = minMs !== undefined && day.getTime() < minMs;
+            return (
+              <button
+                key={day.getTime()}
+                type="button"
+                disabled={disabled}
+                onClick={() => select(day)}
+                className={cn(
+                  "flex size-8 items-center justify-center rounded-md text-sm tabular-nums hover:bg-accent",
+                  inMonth ? "text-foreground" : "text-muted-foreground/40",
+                  today && !selected && "font-semibold text-primary",
+                  selected &&
+                    "bg-primary text-primary-foreground hover:bg-primary",
+                  disabled && "pointer-events-none opacity-30",
+                )}
+              >
+                {format(day, "d")}
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function MonthNav({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: typeof ArrowUp01Icon;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
+    >
+      <HugeiconsIcon icon={icon} strokeWidth={2} className="size-4" />
+    </button>
+  );
+}
