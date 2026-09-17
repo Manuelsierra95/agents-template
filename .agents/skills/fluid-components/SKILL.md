@@ -112,7 +112,7 @@ Cross-package consumers (`apps/web`, future apps) go through `@workspace/ui/*`; 
 - **No third-party UI libraries.** No Radix UI, no shadcn defaults from the standard registry, no MUI, no Headless UI. Base UI is already the primitive behind every fluid component.
 - **Icons go through the slot system.** Components render icons by `name` (e.g. `chevron-right`) via `useIcon`. Lucide is the default. Don't import from `lucide-react` directly inside feature code unless you're augmenting the icon map via `<IconProvider icons={...}>`.
 - **Theme tokens come from `globals.css`.** Surface colors, shadows, radii, and the Inter variable font (required for `font-weight` animations) are wired in `packages/ui/src/styles/globals.css`. Don't redefine colors as Tailwind values.
-- **Motion uses `spring` and `framer-motion`.** Don't hand-write CSS transitions for state changes that fluid components already animate (hover, merge/split, popovers, sidebars). See [motion.md](./motion.md).
+- **Motion uses `spring` and `motion/react`.** Don't hand-write CSS transitions for state changes that fluid components already animate (hover, merge/split, popovers, sidebars). See [motion.md](./motion.md).
 - **Sizes are a region decision.** Wrap dense surfaces in `SizeProvider`, don't toggle per-control. See [sizes.md](./sizes.md).
 - **Surfaces use `surfaceClasses` + `<Elevated>`.** Never hand-roll a panel background. See [surfaces.md](./surfaces.md).
 - **Lists, menus, grids use `useFluidHover` + `FluidHoverHighlight`.** Never `:hover` on individual rows. See [fluid-hover.md](./fluid-hover.md).

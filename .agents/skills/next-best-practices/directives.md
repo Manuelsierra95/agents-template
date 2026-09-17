@@ -68,6 +68,12 @@ export async function getCachedData() {
 
 Requires `cacheComponents: true` in `next.config.ts`.
 
-For detailed usage including cache profiles, `cacheLife()`, `cacheTag()`, and `updateTag()`, see the `next-cache-components` skill.
+Cache Components is shipped across three complementary skills. Pick the one that matches the task:
+
+- `next-cache-components` — API reference (`'use cache'` placement, `cacheLife`, `cacheTag`, `updateTag`, PPR semantics). Read this when writing any cached function.
+- `next-cache-components-adoption` — *how to enable and land* the flag in a project. Use on the first enable, after a Next.js upgrade, or when the build is failing with blocking-prerender / instant validation errors.
+- `next-cache-components-optimizer` — *how to grow a route's static shell* to instant navigation with `@next/playwright`. Use after adoption is green, when a route's static shell doesn't commit immediately or an `instant()` e2e fails.
+
+The architectural rules around *when* to cache, *what* to cache, and *how* to layer it with `Suspense` + skeletons live in `web-ssr-suspense-skeletons`. That skill is the source of truth; the three above provide the mechanics.
 
 Reference: https://nextjs.org/docs/app/api-reference/directives/use-cache

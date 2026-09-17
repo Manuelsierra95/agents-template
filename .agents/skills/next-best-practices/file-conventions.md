@@ -90,6 +90,19 @@ app/
 
 Prefix with `_` to exclude from routing.
 
+### Why use `_components/` (and not `components/`)
+
+A folder named `components/` inside `app/` is a valid route segment. Putting
+files there risks accidentally creating a public URL (e.g. `app/foo/components/page.tsx`
+would be reachable at `/foo/components`). Prefixing with `_` tells Next.js to
+ignore the folder as a route and treat it as an importable private namespace.
+
+This is the convention for **route-specific colocated components** in this
+project. See the `web-ssr-suspense-skeletons` skill for the full 3-tier
+file-layout rule (route → domain → global). That skill is the source of
+truth for *where* a component belongs; this entry is the reference for
+*why* the underscore prefix is required.
+
 ## Middleware / Proxy
 
 ### Next.js 14-15: `middleware.ts`

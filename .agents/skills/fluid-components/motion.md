@@ -66,7 +66,7 @@ The fluid-hover highlight already does (2) internally — no `<MotionConfig>` ne
 
 ## Anti-patterns
 
-- **Hand-written CSS transitions** for state changes fluid components already animate (hover, popovers, sidebars). Reach for `spring` + framer-motion.
+- **Hand-written CSS transitions** for state changes fluid components already animate (hover, popovers, sidebars). Reach for `spring` + `motion/react`.
 - **Picking a duration in JSX** (`{ duration: 0.2 }`). Tokens live in `lib/springs.ts` so the system can change them in one place.
 - **Adding `bounce: 0.2` to `moderate`** for "playfulness". Critically damped is the point.
 - **Skipping the exit tier**. `spring.moderate` for entrance, `spring.moderate.exit` for exit. Always.

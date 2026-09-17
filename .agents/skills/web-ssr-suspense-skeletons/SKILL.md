@@ -269,6 +269,10 @@ Next.js 16 Instant Navigation makes client-side route transitions feel like a na
 | Empty `<div>` or `null` as a Suspense fallback                      | Causes layout shift; always provide a matching skeleton              |
 | Putting `cookies()`/`headers()` inside `'use cache'`                 | Throws at build time — extract outside or use `'use cache: private'` |
 | Disabling `cacheComponents` "to fix a build error"                   | Fix the directive boundary instead; never disable the flag globally   |
+| Putting a route-specific component directly in `page.tsx`            | Bloats the Server Component; harder to read, test, and reuse         |
+| Putting a route-specific component in `components/` or `features/`   | Leaks route internals into the global namespace; couples unrelated routes |
+| Naming a colocated folder `components/` (no underscore) inside `app/<route>/` | Becomes a public route segment (`/route/components`) — collision risk |
+| Importing across routes via `app/<other-route>/_components/...`      | Cross-route coupling; if the source route changes, every consumer breaks silently |
 
 ---
 
@@ -284,6 +288,7 @@ Before merging any change to `apps/web`, confirm:
 - [ ] No spinners are used inside route content; only skeletons.
 - [ ] Instant Navigation works for in-app links (verified in DevTools).
 - [ ] `next.config.ts` still has `cacheComponents: true` and `experimental.instantNavigationDevToolsToggle: true`.
+- [ ] Route-specific components live in `app/<route>/_components/`, not inlined in `page.tsx` and not leaked into `components/` or `features/`.
 
 ---
 
@@ -347,7 +352,18 @@ export default function Loading() {
 
 ## Related Skills
 
-- `next-cache-components` — full reference for `use cache`, `cacheLife`, `cacheTag`, `updateTag`, PPR.
+Cache Components is shipped through **three complementary skills**, each scoped to a different question:
+
+| Skill                                | Question it answers                                                    | When to invoke                                                                                                |
+| ------------------------------------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `next-cache-components`              | *How do I write the API?* (`'use cache'`, `cacheLife`, `cacheTag`, `updateTag`, PPR semantics)   | Writing or reviewing any cached function / component. Read once, then on-demand.                             |
+| `next-cache-components-adoption`     | *The flag is on and the build is red — how do I land it?*              | The first time `cacheComponents: true` is enabled, when adopting Cache Components on a new app, or after a Next.js upgrade that flipped the flag. |
+| `next-cache-components-optimizer`    | *My route isn't instant — how do I push the static shell up?*           | After adoption is green: a route's static shell doesn't commit immediately, an `instant()` e2e fails, or first paint is slow. |
+
+**Order matters.** Adoption → reference → optimizer. Do not invoke the optimizer before adoption is green (every blocker in the build is a candidate for the optimizer's e2e loop, but until the build passes, the loop is noise). Use the API reference (`next-cache-components`) freely during all three phases.
+
+Other related skills:
+
 - `next-best-practices` — file conventions, async APIs, runtime selection, error handling.
 - `react-best-practices` — performance patterns for Server and Client Components.
 - `composition-patterns` — Suspense-friendly component APIs (compound components, slot patterns).
@@ -489,3 +505,176 @@ When `cacheComponents: true` is enabled (see `next.config.ts`), the following ap
 | `await fetch()` in `page.tsx` without `'use cache'` and without `<Suspense>` | Blocks the static shell; defeats streaming                          |
 | `'use cache'` wrapping a `getServerSession()` or `cookies()` call    | Throws at build time — extract outside or use `'use cache: private'` |
 | Disabling `cacheComponents` "to fix a build error"                   | Fix the directive boundary instead                                   |
+
+---
+
+## 14. Feature File Layout & Component Colocation
+
+Every component in `apps/web` belongs in **exactly one** of three tiers.
+Pick the tier by answering two questions:
+
+1. *Is the component used by more than one route?* — if no, it is route-specific.
+2. *Is the component a domain primitive (chat message, agent card, calendar event) shared across routes within a domain?* — if yes, it is a domain primitive.
+
+### The three tiers
+
+```
+apps/web/
+├── components/                  # Tier 1 — GLOBAL (cross-route, cross-domain)
+│   ├── theme-provider.tsx
+│   └── layout/
+│       ├── app-sidebar.tsx
+│       └── workspace-pane.tsx
+│
+├── features/                    # Tier 2 — DOMAIN (reused across routes in the same domain)
+│   ├── chat/
+│   │   ├── chat-thread.tsx
+│   │   ├── chat-composer.tsx
+│   │   └── index.ts
+│   └── auth/
+│       └── components/
+│
+└── app/                         # Tier 3 — ROUTE (colocated, single route only)
+    └── dashboard/
+        └── chat/
+            ├── page.tsx          # thin Server Component wrapper
+            ├── loading.tsx       # route-level skeleton
+            └── _components/      # ← underscore prefix: private, not a route
+                └── chat-panel.tsx
+```
+
+| Tier | Path                              | Used by                          | Examples                                                |
+| ---- | --------------------------------- | -------------------------------- | ------------------------------------------------------- |
+| 1    | `apps/web/components/`            | Any route, any domain            | `theme-provider`, `app-sidebar`, `workspace-pane`       |
+| 2    | `apps/web/features/<domain>/`     | Multiple routes in one domain    | `chat-thread`, `chat-composer`, `login-form`            |
+| 3    | `apps/web/app/<route>/_components/` | **Exactly one** route          | `chat-panel` (used only by `/dashboard/chat`)          |
+
+### The `_components/` convention
+
+A folder inside `app/` whose name starts with `_` is a **private folder**: Next.js excludes it from routing, so it can only be imported. This is the convention for **Tier 3 — route-specific colocated components**.
+
+```tsx
+// app/dashboard/chat/page.tsx
+import { WorkspacePane } from "@/components/layout/workspace-pane"
+import { ChatPanel } from "@/app/dashboard/chat/_components/chat-panel"
+
+export default function ChatPage() {
+  return (
+    <WorkspacePane>
+      <ChatPanel />
+    </WorkspacePane>
+  )
+}
+```
+
+```tsx
+// app/dashboard/chat/_components/chat-panel.tsx — Tier 3, "use client"
+"use client"
+
+import { useState } from "react"
+import { ChatThread, ChatComposer } from "@/features/chat"
+
+export function ChatPanel() {
+  const [entries, setEntries] = useState(/* ... */)
+  // route-specific orchestration of domain primitives
+}
+```
+
+### Decision rule (apply in order)
+
+```
+Is the component used by ≥ 2 routes OR a layout primitive (sidebar, header, theme)?
+  → Tier 1: apps/web/components/
+
+Otherwise, is the component a reusable primitive within a single domain
+       (e.g. a chat bubble rendered by chat routes, an agent card)?
+  → Tier 2: apps/web/features/<domain>/
+
+Otherwise, the component is route-specific (orchestrates Tier 1 + Tier 2
+       for one page, holds route-local state, or wires Suspense):
+  → Tier 3: apps/web/app/<route>/_components/
+```
+
+### Why this matters
+
+- **Deletion is safe.** If a route is removed, its `_components/` goes with it. No orphan files in a global barrel.
+- **No accidental public routes.** A folder literally named `components/` (without `_`) inside `app/<route>/` would be a valid URL segment. The `_` prefix makes the intent unambiguous.
+- **Right-sized imports.** Importing `@/components/...` is a strong signal that the dependency is global and stable. Importing `@/app/<route>/_components/...` is a strong signal that the dependency is local and may change.
+- **Matches Server / Client boundaries.** Tier 3 typically holds stateful Client Components that orchestrate Tier 2 Server-friendly primitives. The colocated `_components/` is the natural home for the `"use client"` shell that wraps the route.
+
+### Anti-patterns (file layout)
+
+| Anti-pattern                                                         | Why it breaks the architecture                                       |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `components/` (no underscore) inside `app/<route>/`                  | Becomes a public route segment (`/route/components`) — collision risk |
+| Route-specific component inlined in `page.tsx`                       | Bloats the Server Component; harder to read, test, and split for Suspense |
+| Route-specific component placed in `apps/web/components/`            | Pollutes the global namespace; couples unrelated routes               |
+| Route-specific component placed in `apps/web/features/<other-domain>/` | Cross-domain coupling; wrong abstraction layer                       |
+| Importing `app/<other-route>/_components/...` from a different route | Cross-route coupling; renames or removals break unrelated pages silently |
+| Using barrel `index.ts` inside `_components/`                        | Hidden dependencies; harder to enforce the tier rule via grep        |
+
+### Verification
+
+Before merging any new component, run from the repo root:
+
+```bash
+# Tier 3: must live under app/<route>/_components/
+rg -n "components/" apps/web/app | rg -v "/_components/"
+
+# Tier 1/2: nothing route-specific should leak here
+rg -n "apps/web/components/" apps/web/app
+rg -n "apps/web/features/" apps/web/app
+```
+
+The first grep should return zero matches (only `_components/` allowed inside `app/`). The other two are informational — every match should be a justified Tier 1/2 import from a Server Component.
+
+---
+
+## 15. Cache Components Skill Routing
+
+This project has `cacheComponents: true` enabled in `apps/web/next.config.ts` and follows the Cache Components mental model throughout § § 2, 6, and 13. Cache Components work is delivered through **three complementary skills** that must be invoked in the right order. Conflating them leads to slow adoption and broken e2e tests.
+
+### The three skills and their scope
+
+| Skill | Scope | Reads | Writes | Touches the build? |
+| --- | --- | --- | --- | --- |
+| `next-cache-components` | API reference. How `'use cache'`, `cacheLife`, `cacheTag`, `updateTag`, `revalidateTag`, and PPR semantics compose. | n/a | n/a | No |
+| `next-cache-components-adoption` | Adoption sequence: enable the flag → resolve blocking routes → choose between `export const instant = false` and fixing in place → run the `cache-components-instant-false` codemod → land a passing build. | Build output, dev overlay | `next.config.ts`, `app/<route>/page.tsx`, `app/<route>/loading.tsx`, `app/<route>/_components/**`, `lib/**` | Yes — runs the codemod and the build |
+| `next-cache-components-optimizer` | Optimization loop: turn a route into instant navigation using a failing `@next/playwright` `instant()` e2e + a production build with the testing API exposed, then push the static shell up by deferring blocking reads. | Build output, `instant()` failures, runtime waterfalls | Same surface as adoption | Yes — runs the production build and Playwright |
+
+### Routing rules
+
+```
+User wants to enable / adopt / migrate to Cache Components
+  → next-cache-components-adoption (always first)
+
+User wants to write or review a cached function / component
+  → next-cache-components (the API reference) — read on demand during adoption or while implementing a feature
+
+Build is red with blocking-prerender / instant validation errors after enabling the flag
+  → next-cache-components-adoption (do not invoke the optimizer until the build is green)
+
+A route's static shell is missing or its first paint is slow
+  → next-cache-components-optimizer (after adoption is green and the route is reachable)
+
+User wants an instant() e2e guard for a route
+  → next-cache-components-optimizer (it owns the test template + the production-rig scaffold)
+```
+
+### Order rule
+
+`adoption` → `reference` (in parallel with both) → `optimizer`.
+
+- **Do not** run `next-cache-components-optimizer` before `next-cache-components-adoption` is green. The optimizer's loop works against a passing build and a working dev server; if either is broken by an unfinished adoption, the `instant()` e2e fails for reasons unrelated to the static shell.
+- **Do** read `next-cache-components` freely during any phase. It is a reference, not a workflow.
+
+### What each skill owns
+
+- `next-cache-components-adoption` owns the **strategic question**: "do we fix this route or opt it out with `export const instant = false`?". See `references/per-page-decisions.md` for the criteria and `references/dev-only-validations.md` for the validation level.
+- `next-cache-components-optimizer` owns the **tactical question**: "given a reachable route, how do we make its static shell commit immediately?" See `rig-template.md` (production build rig), `test-template.md` (the `instant()` template), and `reference/patterns.md` / `reference/red-test-robustness.md` (blockers and fixes).
+
+If a task is ambiguous, default to the **API reference** (`next-cache-components`) for reading and the **adoption** skill for writing until the build is green; only escalate to the optimizer when the question is specifically about static-shell shape, first paint, or `instant()` e2e.
+
+### Conflict resolution
+
+When a rule from any Cache Components skill conflicts with this one, **this skill wins** for *architectural* questions (where caching belongs in the three layers, when `'use cache'` is appropriate, how to compose with `Suspense`). The Cache Components skills win for *API mechanics* (the exact shape of `cacheLife`, the codemod flags, the rig template path, the `instant()` test API).
