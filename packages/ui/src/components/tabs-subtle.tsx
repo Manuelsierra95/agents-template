@@ -12,7 +12,7 @@ import {
   type HTMLAttributes,
 } from "react";
 import { Tabs } from "@base-ui/react/tabs";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import type { IconComponent } from "@workspace/ui/lib/icon-context.tsx";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { spring } from "@workspace/ui/lib/springs.ts";

@@ -13,7 +13,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion";
 
 // SSR-safe layout effect (client components still server-render in Next).
@@ -907,7 +907,7 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
       if (contentHeight !== null) needsSnap.current = false;
     }, [contentHeight]);
 
-    // Whether the framer-motion height exit animation has fully finished.
+    // Whether the motion height exit animation has fully finished.
     // Base UI's Panel would apply `hidden` the moment a controlled item
     // closes (useCollapsibleRoot sets `mounted = false` in a layout effect
     // when no CSS transition/animation is detected on the panel element, and
@@ -926,7 +926,7 @@ const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
     // element persists through the exit animation and the trigger ↔ panel
     // ARIA contract stays intact: the panel carries `role="region"`,
     // `aria-labelledby` and the id that the Trigger's `aria-controls` points
-    // to. The framer-motion height animation lives one level down inside the
+    // to. The motion height animation lives one level down inside the
     // persistent panel element and flips its target with `isOpen` (content
     // stays mounted so it can be measured).
     return (

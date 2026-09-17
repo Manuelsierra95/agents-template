@@ -5,7 +5,7 @@ import {
   AnimatePresence,
   useReducedMotion,
   type Transition,
-} from "framer-motion";
+} from "motion/react";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { spring } from "@workspace/ui/lib/springs.ts";
 import type { ItemRect } from "@workspace/ui/hooks/use-fluid-hover.ts";

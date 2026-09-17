@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useAnimationControls } from "framer-motion";
+import { AnimatePresence, motion, useAnimationControls } from "motion/react";
 import { FileThumbnail } from "@workspace/ui/components/file-thumbnail";
 import { Tooltip } from "@workspace/ui/components/tooltip";
 import { type QueuedMessage } from "@workspace/ui/components/input-message";

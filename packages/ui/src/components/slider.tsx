@@ -18,7 +18,7 @@ import {
   animate,
   AnimatePresence,
   type MotionValue,
-} from "framer-motion";
+} from "motion/react";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { useSizeVariant, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";

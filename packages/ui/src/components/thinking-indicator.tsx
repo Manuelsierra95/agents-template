@@ -1,7 +1,7 @@
 "use client";
 
 import { forwardRef, useState, useEffect, type HTMLAttributes } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
 import { useSize, type SizeVariant } from "@workspace/ui/lib/size-context.tsx";

@@ -13,7 +13,7 @@ import {
   type HTMLAttributes,
   type InputHTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
 import { useIcon, type IconComponent } from "@workspace/ui/lib/icon-context.tsx";

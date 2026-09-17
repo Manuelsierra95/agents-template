@@ -9,7 +9,7 @@ import {
   useId,
   type HTMLAttributes,
 } from "react";
-import { motion, useMotionValue, animate, type Transition } from "framer-motion";
+import { motion, useMotionValue, animate, type Transition } from "motion/react";
 import { Switch as SwitchPrimitive } from "@base-ui/react/switch";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { spring } from "@workspace/ui/lib/springs.ts";

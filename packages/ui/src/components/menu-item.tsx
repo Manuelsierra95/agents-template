@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import type { IconComponent } from "@workspace/ui/lib/icon-context.tsx";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { fontWeights } from "@workspace/ui/lib/font-weight.ts";
 import { shapeMap } from "@workspace/ui/lib/shape-context.tsx";

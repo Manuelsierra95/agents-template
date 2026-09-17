@@ -21,7 +21,7 @@ import {
   motion,
   Reorder,
   useReducedMotion,
-} from "framer-motion"
+} from "motion/react"
 import { cn } from "@workspace/ui/lib/utils.ts"
 import { fontWeights } from "@workspace/ui/lib/font-weight.ts"
 import { spring } from "@workspace/ui/lib/springs.ts"

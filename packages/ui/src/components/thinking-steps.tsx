@@ -12,7 +12,7 @@ import {
   type ReactNode,
   type HTMLAttributes,
 } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Collapsible } from "@base-ui/react/collapsible";
 
 // SSR-safe layout effect (client components still server-render in Next).
@@ -32,7 +32,7 @@ import type { BadgeColor } from "@workspace/ui/components/badge";
 //
 // ThinkingSteps and ThinkingStepDetails are both single collapsible sections,
 // built directly on Base UI's Collapsible (Root/Trigger/Panel) with the
-// library's framer-motion springs layered on top.
+// library's motion springs layered on top.
 
 /** Open state of the nearest ThinkingSteps root, for the header trigger/panel. */
 const ThinkingStepsOpenContext = createContext(false);
@@ -135,7 +135,7 @@ interface CollapsePanelProps {
 }
 
 /**
- * Collapsible panel with a framer-motion height + spring animation.
+ * Collapsible panel with a motion height + spring animation.
  *
  * Base UI's Panel would apply `hidden` the moment a controlled collapsible
  * closes (it can't observe the JS-driven exit animation), which is

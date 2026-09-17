@@ -11,7 +11,7 @@ import {
   type HTMLAttributes,
 } from "react";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@workspace/ui/lib/utils.ts";
 import { spring, exitFallbackMs } from "@workspace/ui/lib/springs.ts";
 import { useSurface, SurfaceProvider } from "@workspace/ui/lib/surface-context.tsx";
@@ -30,12 +30,12 @@ import {
 // Built on Base UI Dialog rather than Base UI Drawer: Drawer's
 // swipe-to-dismiss writes inline `transform` + `--drawer-swipe-movement-*`
 // CSS vars onto its Popup and expects CSS-transition choreography (plus a
-// mandatory <Drawer.Viewport>), which fights framer-motion's transform
+// mandatory <Drawer.Viewport>), which fights motion's transform
 // management on the same element. Dialog provides everything we actually
 // need — scroll lock, focus trap, focus restore, Esc + outside-click
-// dismissal — while leaving the slide animation to framer-motion.
+// dismissal — while leaving the slide animation to motion
 
-// Props framer-motion redefines with incompatible signatures; they must not
+// Props motion redefines with incompatible signatures; they must not
 // be forwarded from Base UI's render-prop payload onto a motion.div.
 type MotionSafeDivProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
