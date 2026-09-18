@@ -414,7 +414,7 @@ pnpm db:test:setup    # creates agents_test + applies Drizzle migrations
 
 ## Conventions
 
-- Tests that need Postgres use `DATABASE_URL_TEST`. The root script defaults it to `postgresql://agents:agents@127.0.0.1:5432/agents_test` (the docker-compose dev DB), so `pnpm test` Just Works. Override the env var if you point at a different host.
+- Tests that need Postgres use `DATABASE_URL_TEST`. It lives in `.env` (and `.env.example`) at the repo root and points at the docker-compose dev DB, so `pnpm test` Just Works. Override it in `.env` (or the shell) if you point at a different host.
 - Suites that touch the DB truncate every relevant table in `beforeEach` (see `packages/auth/tests/helpers.ts:resetDb` and the inlined copy in `apps/api/tests/auth-battery.test.ts`). Two suites that share the same DB therefore cannot run in parallel — `--workspace-concurrency=1` enforces the ordering.
 - New test files in `tests/` (or co-located `*.test.ts`) are auto-picked-up by the workspace's existing `vitest run` task. No wiring needed.
 
