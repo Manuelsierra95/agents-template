@@ -1109,14 +1109,10 @@ const SidebarInset = forwardRef<HTMLElement, SidebarInsetProps>(
           // it and so the scroll stays contained inside the inset.
           "peer-data-[variant=inset]:rounded-3xl peer-data-[variant=inset]:bg-surface-2 peer-data-[variant=inset]:shadow-surface-2",
           // The padding that gives the inset breathing room lives on
-          // SidebarProvider (p-2), not as margin here — a margin-based gap
-          // would push the inset's bottom edge past the wrapper's
-          // `overflow-hidden` clip and eat the bottom inset. Negative
-          // margins on the rail side cancel the wrapper's padding so the
-          // card sits flush against the rail when expanded; with the rail
-          // collapsed the wrapper's padding becomes the visible inset.
-          "peer-data-[variant=inset]:peer-data-[side=left]:-ml-2 peer-data-[variant=inset]:peer-data-[state=collapsed]:peer-data-[side=left]:ml-0",
-          "peer-data-[variant=inset]:peer-data-[side=right]:-mr-2 peer-data-[variant=inset]:peer-data-[state=collapsed]:peer-data-[side=right]:mr-0",
+          // SidebarProvider (p-2). The inset occupies the remaining
+          // flex-1 space, so it sits flush against the rail when expanded
+          // and against the wrapper's padding when collapsed — without a
+          // negative margin trick.
           "transition-[margin] duration-80",
           className
         )}
