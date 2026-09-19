@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, type ReactNode } from "react"
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react"
 import {
   ChatMessage,
   ThinkingSteps,
@@ -42,6 +42,28 @@ export type ChatThreadProps = {
    * consistent across views.
    */
   mode?: "client" | "debug"
+  /** Pin every user / assistant bubble to the compact size step
+   *  (tighter padding, smaller type). Reasoning blocks are already
+   *  compact and unaffected. */
+  compact?: boolean
+  /**
+   * Whether the thread's `<ol>` owns its own scrollbar. Default `true`
+   * (the thread scrolls itself). Set `false` when the caller wraps the
+   * thread in their own scrolling container — typically so the scrollbar
+   * sits at the pane's right edge instead of at the right edge of a
+   * centered, max-w column. The auto-scroll-to-bottom effect follows
+   * the same flag: it only fires when `true`.
+   */
+  scroll?: boolean
+  /**
+   * Extra classes merged onto the thread's scroll container. Lets
+   * callers reserve space for an overlapping composer without
+   * rendering a parallel scroll wrapper.
+   */
+  className?: string
+  /** Inline style merged onto the thread's scroll container (e.g.
+   *  a measured `paddingBottom` for a floating composer). */
+  style?: CSSProperties
 }
 
 /**
@@ -69,31 +91,60 @@ export function ChatThread({
   timeFormat = "short",
   emptyState,
   mode = "client",
+  compact = false,
+  scroll = true,
+  className,
+  style,
 }: ChatThreadProps) {
   const scrollRef = useRef<HTMLOListElement | null>(null)
 
   useEffect(() => {
+    // When the caller owns the scroll container (scroll={false}) the
+    // thread's `<ol>` doesn't scroll, so there's no point pinning it.
+    if (!scroll) return
     const el = scrollRef.current
     if (!el) return
     el.scrollTop = el.scrollHeight
-  }, [entries])
+  }, [entries, scroll])
+
+  // Self-scrolling thread: grows inside its flex parent (`flex-1`).
+  // Externally-scrolled thread: fills the scroll container in height
+  // (`min-h-full`) and starts content from the top, so the first message
+  // sits at the top of the pane (not pinned to the bottom). Left padding
+  // is bumped (`pl-8`) so the assistant bubble — which is `items-start`
+  // inside ChatMessage — doesn't sit glued to the column edge.
+  const olClassName = scroll
+    ? `flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4${className ? ` ${className}` : ""}`
+    : `flex min-h-full flex-col gap-2 px-4 py-4 pl-8${className ? ` ${className}` : ""}`
 
   return (
     <ol
       ref={scrollRef}
-      className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-4"
+      className={olClassName}
+      style={style}
     >
       {entries.length === 0 && emptyState ? (
         <li className="contents">{emptyState}</li>
       ) : null}
       {entries.map((entry) => (
-        <li key={entry.id} className="contents">
+        <li
+          key={entry.id}
+          // `block` (not `contents`) so the row has a real box —
+          // `getBoundingClientRect` on a `display: contents` element
+          // returns zero in Firefox/Safari, which would break the
+          // `scrollToMessage` measurement that uses the row's top
+          // edge as the anchor. Visual layout is identical because
+          // the surrounding `<ol>` is `flex-col gap-2` and the row
+          // is the only child of the `<li>`.
+          data-entry-id={entry.id}
+        >
           <EntryRow
             entry={entry}
             userActions={userActions}
             assistantActions={assistantActions}
             timeFormat={timeFormat}
             mode={mode}
+            compact={compact}
           />
         </li>
       ))}
@@ -107,48 +158,80 @@ function EntryRow({
   assistantActions,
   timeFormat,
   mode,
+  compact,
 }: {
   entry: ChatEntry
   userActions?: ReactNode
   assistantActions?: ReactNode
   timeFormat: "short" | "long"
   mode: "client" | "debug"
+  compact: boolean
 }) {
   const side = entrySide(entry)
 
   switch (entry.kind) {
     case "user": {
       return (
-        <ChatMessage
-          from="user"
-          time={
-            <time
-              dateTime={new Date(entry.createdAt).toISOString()}
-              suppressHydrationWarning
+        // Right rail: a flex row that fills the thread column width
+        // and pushes the bubble to the trailing edge. The bubble
+        // wrapper is capped at `max-w-md` (28 rem ≈ 448 px) so a
+        // long user message can't sprawl into the agent's lane —
+        // together with the column's max-w-5xl this leaves a 128 px
+        // gap between the two rails at max width.
+        <div className="flex w-full justify-end">
+          <div className="w-full max-w-md">
+            <ChatMessage
+              from="user"
+              size={compact ? "compact" : "default"}
+              // `!max-w-none` overrides ChatMessage's default
+              // `max-w-[80%]` so the bubble fills its md-cap
+              // wrapper instead of stopping at 80% of the column.
+              className="!max-w-none"
+              time={
+                <time
+                  dateTime={new Date(entry.createdAt).toISOString()}
+                  suppressHydrationWarning
+                >
+                  {timeFormat === "long"
+                    ? longDateTimeLabel(entry.createdAt)
+                    : clockLabel(entry.createdAt)}
+                </time>
+              }
+              actions={userActions}
             >
-              {timeFormat === "long"
-                ? longDateTimeLabel(entry.createdAt)
-                : clockLabel(entry.createdAt)}
-            </time>
-          }
-          actions={userActions}
-        >
-          {entry.content}
-        </ChatMessage>
+              {entry.content}
+            </ChatMessage>
+          </div>
+        </div>
       )
     }
     case "agent": {
       return (
-        <ChatMessage from="assistant" actions={assistantActions}>
-          {entry.content}
-        </ChatMessage>
+        // Left rail: mirror of the user case. Justify-start pins
+        // the bubble to the leading edge; the md-cap wrapper
+        // guarantees the same 128 px separation from the user's
+        // lane.
+        <div className="flex w-full justify-start">
+          <div className="w-full max-w-md">
+            <ChatMessage
+              from="assistant"
+              size={compact ? "compact" : "default"}
+              className="!max-w-none"
+              actions={assistantActions}
+            >
+              {entry.content}
+            </ChatMessage>
+          </div>
+        </div>
       )
     }
     case "system": {
       return (
         <div
           className={
-            mode === "debug" ? "w-full max-w-5xl" : "w-full max-w-[560px]"
+            mode === "debug"
+              ? "w-full max-w-5xl self-center text-center"
+              : "w-full max-w-[560px] self-center text-center"
           }
           data-sender="system"
         >
