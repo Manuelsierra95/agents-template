@@ -43,3 +43,7 @@ export {
   ilike,
   isNull,
 } from "drizzle-orm"
+
+// Re-export the queries at the package root so callers don't need
+// to know which file each query lives in.
+export * from "@workspace/db/queries/index.ts"
