@@ -72,6 +72,18 @@ export { Button, type ButtonProps, type ButtonSize } from "@workspace/ui/compone
 export { Tooltip, TooltipProvider, TooltipPortalContainer } from "@workspace/ui/components/tooltip"
 export { ScrollArea } from "@workspace/ui/components/scroll-area"
 
+export {
+  MessageScrollerProvider,
+  MessageScroller,
+  MessageScrollerViewport,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerButton,
+  useMessageScroller,
+  useMessageScrollerScrollable,
+  useMessageScrollerVisibility,
+} from "@workspace/ui/components/message-scroller"
+
 export { surfaceClasses, surfaceHoverClasses } from "@workspace/ui/lib/surface-classes.ts"
 export { spring } from "@workspace/ui/lib/springs.ts"
 export { useIcon, type IconComponent, type IconName } from "@workspace/ui/lib/icon-context.tsx"
