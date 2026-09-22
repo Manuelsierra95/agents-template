@@ -36,7 +36,7 @@ export function useEventStream(): void {
       return
     }
 
-    const source = new EventSourceCtor("/api/events", {
+    const source = new EventSourceCtor("/api/realtime", {
       withCredentials: true,
     })
 

@@ -10,7 +10,7 @@ import { InMemoryEventBus } from "@/lib/realtime/in-memory-event-bus"
  * flowing to the stream) is exercised by
  * `packages/auth/tests/middleware.test.ts` because it requires a live
  * test DB. Here we only prove that the route is mounted under
- * `/api/events`, sits behind `requireAuth`, and returns the expected
+ * `/api/realtime`, sits behind `requireAuth`, and returns the expected
  * content type when the auth gate passes.
  *
  * The route is mounted without a bus so the test stays isolated — the
@@ -23,7 +23,7 @@ import { InMemoryEventBus } from "@/lib/realtime/in-memory-event-bus"
 const REQUIRED_TEST_TOKEN =
   "test_internal_api_token_at_least_32_chars_long_xx"
 
-describe("GET /api/events (auth gate)", () => {
+describe("GET /api/realtime (auth gate)", () => {
   it("returns 401 with no session cookie", async () => {
     const app = createApp(
       loadEnv({
@@ -39,7 +39,7 @@ describe("GET /api/events (auth gate)", () => {
       }),
     )
 
-    const res = await app.request("/api/events")
+    const res = await app.request("/api/realtime")
     // requireAuth -> HTTPException(401) -> JSON error body.
     expect(res.status).toBe(401)
     const body = (await res.json()) as { error: { code: string } }
@@ -59,7 +59,7 @@ describe("GET /api/events (auth gate)", () => {
       }),
     )
 
-    const res = await app.request("/api/events", {
+    const res = await app.request("/api/realtime", {
       headers: { Cookie: "better-auth.session_token=garbage" },
     })
     expect(res.status).toBe(401)

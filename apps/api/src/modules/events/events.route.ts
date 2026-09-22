@@ -9,7 +9,7 @@ import { requireAuthContext } from "@/lib/route-helpers"
 const KEEPALIVE_INTERVAL_MS = 15_000
 
 /**
- * `GET /api/events` — authenticated SSE endpoint.
+ * `GET /api/realtime` — authenticated SSE endpoint.
  *
  * One long-lived `text/event-stream` per browser tab. The hub fans out
  * `RealtimeEvent`s to every connection whose `organizationId` matches
@@ -18,7 +18,7 @@ const KEEPALIVE_INTERVAL_MS = 15_000
  *
  * Auth: requires a valid session + active organization. The middleware
  * `requireAuth` runs in the parent route group (see `app.ts`); the
- * `/api/events` mount point therefore inherits it.
+ * `/api/realtime` mount point therefore inherits it.
  *
  * Wiring: the realtime bus is bound to the hub inside `createApp` (see
  * `app.ts`). This handler does not touch the bus directly — it only

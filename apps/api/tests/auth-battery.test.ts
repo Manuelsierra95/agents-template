@@ -2,7 +2,7 @@
  * End-to-end auth battery for apps/api.
  *
  * Exercises the full HTTP surface — `/api/auth/*` Better Auth handler,
- * the protected `/api/me` endpoint, and the SSE `/api/events` stream —
+ * the protected `/api/me` endpoint, and the SSE `/api/realtime` stream —
  * via the real `createApp` so middleware (CORS, error handler,
  * `requireAuth`) participates in the assertions.
  *
@@ -478,12 +478,12 @@ skipIfNoDb("API auth battery (e2e)", () => {
     expect(accept.status).toBeGreaterThanOrEqual(400)
   })
 
-  // ─── 9. /api/events with a valid cookie opens the SSE stream ─────────
-  it("returns text/event-stream on /api/events for an authenticated session", async () => {
+  // ─── 9. /api/realtime with a valid cookie opens the SSE stream ─────────
+  it("returns text/event-stream on /api/realtime for an authenticated session", async () => {
     const email = `sse-${uniqueSuffix()}@test.local`
     const su = await client.signUp(email, "SSE")
 
-    const res = await app.request("/api/events", {
+    const res = await app.request("/api/realtime", {
       headers: { Cookie: su.cookies, Accept: "text/event-stream" },
     })
     expect(res.status).toBe(200)
@@ -496,14 +496,14 @@ skipIfNoDb("API auth battery (e2e)", () => {
     await res.body?.cancel()
   })
 
-  // ─── 10. /api/events after sign-out is 401 ───────────────────────────
-  it("rejects /api/events after sign-out", async () => {
+  // ─── 10. /api/realtime after sign-out is 401 ───────────────────────────
+  it("rejects /api/realtime after sign-out", async () => {
     const email = `sse-so-${uniqueSuffix()}@test.local`
     const su = await client.signUp(email, "SSE")
     const out = await client.signOut(su.cookies)
     expect(out.status).toBe(200)
 
-    const res = await app.request("/api/events", {
+    const res = await app.request("/api/realtime", {
       headers: { Cookie: out.cookies, Accept: "text/event-stream" },
     })
     expect(res.status).toBe(401)

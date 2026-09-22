@@ -101,7 +101,7 @@ export function createApp(
   const events = new Hono<AppEnv>()
   events.use("*", requireAuth)
   events.route("/", eventsRoute(eventBus))
-  api.route("/events", events)
+  api.route("/realtime", events)
 
   // Internal-service namespace. Every route here is gated by
   // `requireInternalToken` — only `apps/agent` (and any other server-
@@ -149,7 +149,7 @@ export function createApp(
   // for the same reason as `/api/chat` and `/api/conversations`:
   // the dashboard is multi-tenant and the row scope flows from
   // `ctx.var.auth.organizationId`. Realtime updates are published via
-  // `c.var.eventBus`; consumers (`apps/web`) listen on `/api/events`.
+  // `c.var.eventBus`; consumers (`apps/web`) listen on `/api/realtime`.
   const calendar = new Hono<AppEnv>()
   calendar.use("*", requireAuth)
   calendar.route("/events", makeCalendarEventsRoute())
