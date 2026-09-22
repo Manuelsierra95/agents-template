@@ -6,14 +6,16 @@ import { checkDocker, formatDockerUnavailable, runCompose } from "../docker"
 import { composeFilePath } from "../compose"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+// packages/infra/src/commands/up.ts → up 4 → repo root → apps/api
 const repoRoot = resolve(__dirname, "..", "..", "..", "..")
+const apiEnvPath = resolve(repoRoot, "apps", "api", ".env")
 
-// Auto-load .env from the repo root if DATABASE_URL is not already set.
-// This lets `pnpm db:up` work without `dotenv -e .env --` prefix.
+// Auto-load `apps/api/.env` if DATABASE_URL is not already set. This
+// lets `pnpm db:up` work without prefixing `dotenv -e`.
 function loadEnvFile() {
   if (process.env.DATABASE_URL) return
-  const path = resolve(repoRoot, ".env")
-  if (!existsSync(path)) return
+  if (!existsSync(apiEnvPath)) return
+  const path = apiEnvPath
   const text = readFileSync(path, "utf8")
   for (const line of text.split("\n")) {
     const trimmed = line.trim()
@@ -40,7 +42,7 @@ function parseUrl(): string {
   if (!url) {
     console.error(
       "[db:up] FATAL: DATABASE_URL is not set.\n" +
-        "Set DATABASE_URL in your .env file (see .env.example at the repo root)\n" +
+        "Set DATABASE_URL in apps/api/.env (see apps/api/.env.example)\n" +
         "or export it before running pnpm db:up.",
     )
     process.exit(1)

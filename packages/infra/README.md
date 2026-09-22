@@ -45,9 +45,12 @@ No `Dockerfile` is shipped. The official image is used directly.
 | `POSTGRES_PASSWORD` | `agents` | DB password. |
 | `POSTGRES_DB` | `agents` | Initial database name. |
 | `POSTGRES_PORT` | `5432` | Host port mapped to container's `5432`. |
-| `DATABASE_URL` | — | Connection string. Required for `db:up` to verify readiness. |
+| `DATABASE_URL` | — | Connection string. Required for `db:up` to verify readiness. Read from `apps/api/.env`. |
 
-The repository root `.env.example` lists these. Use a local `.env` (gitignored).
+`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`
+and `REDIS_PORT` live in `packages/infra/docker/.env` (gitignored,
+colocated with `compose.yml`). `DATABASE_URL` lives in `apps/api/.env`
+— that file is the runtime's source of truth.
 
 ## Commands
 

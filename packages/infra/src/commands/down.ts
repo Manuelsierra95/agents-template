@@ -5,12 +5,14 @@ import { checkDocker, formatDockerUnavailable, runCompose } from "../docker"
 import { composeFilePath } from "../compose"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+// packages/infra/src/commands/down.ts → up 4 → repo root → apps/api
 const repoRoot = resolve(__dirname, "..", "..", "..", "..")
+const apiEnvPath = resolve(repoRoot, "apps", "api", ".env")
 
 function loadEnvFile() {
   if (process.env.DATABASE_URL) return
-  const path = resolve(repoRoot, ".env")
-  if (!existsSync(path)) return
+  if (!existsSync(apiEnvPath)) return
+  const path = apiEnvPath
   const text = readFileSync(path, "utf8")
   for (const line of text.split("\n")) {
     const trimmed = line.trim()
