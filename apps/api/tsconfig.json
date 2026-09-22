@@ -16,6 +16,7 @@
       "@workspace/contracts": ["../../packages/contracts/src/index.ts"],
       "@workspace/contracts/*": ["../../packages/contracts/src/*"],
       "@workspace/contracts/chat": ["../../packages/contracts/src/chat/index.ts"],
+      "@workspace/contracts/calendar": ["../../packages/contracts/src/calendar/schemas.ts"],
       "@workspace/auth/*": ["../../packages/auth/src/*"],
       "@workspace/db/*": ["../../packages/db/src/*"]
     }

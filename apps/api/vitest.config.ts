@@ -17,6 +17,10 @@ export default defineConfig({
         replacement: path.join(contractsSrc, "index.ts"),
       },
       {
+        find: /^@workspace\/contracts\/calendar$/,
+        replacement: path.join(contractsSrc, "calendar/schemas.ts"),
+      },
+      {
         find: /^@workspace\/contracts\/(.*)$/,
         replacement: path.join(contractsSrc, "$1"),
       },

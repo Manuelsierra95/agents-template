@@ -141,7 +141,7 @@ export function PanelHeader({
           return (
             <motion.button
               type="button"
-              key={event._id}
+              key={event.id}
               data-event
               onClick={() => open({ kind: "event", event })}
               whileTap={press.whileTap}
@@ -164,7 +164,7 @@ export function PanelHeader({
             >
               <RevealFlash
                 reveal={reveal}
-                targetId={[event._id, event.providerEventId]}
+                targetId={[event.id]}
                 className="rounded-md bg-[color-mix(in_oklab,var(--primary)_45%,transparent)]"
               />
               <span

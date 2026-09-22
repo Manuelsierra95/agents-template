@@ -12,12 +12,10 @@ import {
 import { startOfDay } from "date-fns";
 
 import type {
-  Availability,
   Booking,
-  CalendarEvent,
-  CalendarListItem,
   UserPreferences,
 } from "@/lib/mocks/types";
+import type { CalendarEvent } from "@/lib/calendar/types";
 import { useMocks } from "@/lib/mocks";
 import { useMyPreferences } from "@/lib/mocks/use-preferences";
 
@@ -40,8 +38,8 @@ export type DockView =
 export type SettingsSection = "calendars" | "preferences";
 
 function dockViewId(view: DockView): string {
-  if (view.kind === "event") return `event:${view.event._id}`;
-  if (view.kind === "edit") return `edit:${view.event._id}`;
+  if (view.kind === "event") return `event:${view.event.id}`;
+  if (view.kind === "edit") return `edit:${view.event.id}`;
   if (view.kind === "booking") return `booking:${view.booking._id}`;
   return view.kind;
 }

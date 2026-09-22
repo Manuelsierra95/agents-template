@@ -1,58 +1,46 @@
-/** Shared types for the calendar UI. Plain TS — no Convex Doc<> wrapper. */
+/**
+ * Shared types for the mocks that still back the calendar workspace —
+ * calendars, bookings, availability, notifications, preferences, search,
+ * and the public-page preview.
+ *
+ * Calendar events (`CalendarEvent`) moved to `@/lib/calendar/types`,
+ * derived from the contracts schemas. The remaining mock-only surfaces
+ * (`useSearch`, the search panel) use `MockSearchEvent` below — a
+ * legacy shape that still carries `_id`, `localCalendarId`, and
+ * `attendees`. Search will migrate to the real backend in a later phase
+ * and `MockSearchEvent` will be deleted then.
+ */
+export type { CalendarEvent } from "@/lib/calendar/types"
 
-export type CalendarEvent = {
-  _id: string;
-  /** Local calendar this event belongs to. */
-  localCalendarId: string;
-  /** Stable provider identifier (Google's event id, if synced). */
-  providerEventId?: string;
-  /** "events" segment. */
-  kind?: "default" | "focus" | "outOfOffice" | "workingLocation";
-  summary?: string;
-  description?: string;
-  location?: string;
-  /** Event start, ms since epoch (UTC). */
-  startMs: number;
-  /** Event end, ms since epoch (UTC). */
-  endMs: number;
-  allDay?: boolean;
-  status?: "confirmed" | "cancelled" | "tentative";
-  /** Google Calendar's "1".."11" color key, when known. */
-  color?: string;
-  attendees?: Attendee[];
-  conferenceUrl?: string;
-  repeat?: RepeatRule;
-  /** Locks interactivity: read-only on remote calendars. */
-  capabilities?: EventCapabilities;
-};
+/**
+ * Legacy mock shape for the search-panel seed index. Distinct from the
+ * wire `CalendarEvent` (which has `id` / `organizationId` / etc.). Kept
+ * around so the search index doesn't need a complete rewrite before the
+ * calendar-events migration ships.
+ */
+export type MockSearchEvent = {
+  _id: string
+  localCalendarId: string
+  summary?: string
+  description?: string
+  location?: string
+  startMs: number
+  endMs: number
+  allDay?: boolean
+  color?: string
+  conferenceUrl?: string
+  attendees?: MockAttendee[]
+}
 
-export type Attendee = {
-  email: string;
-  displayName?: string;
-  /** Optional sync'd contact photo URL. */
-  photoUrl?: string;
-  organizer?: boolean;
-  self?: boolean;
-  response?: "needsAction" | "accepted" | "declined" | "tentative";
-  optional?: boolean;
-};
-
-export type RepeatRule = {
-  freq: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
-  interval?: number;
-  until?: number;
-  count?: number;
-  byWeekday?: number[];
-  byMonthDay?: number[];
-};
-
-export type EventCapabilities = {
-  canEdit: boolean;
-  canDelete: boolean;
-  canInvite: boolean;
-  canSeeGuests: boolean;
-  canSeeConference: boolean;
-};
+/** Attendee shape that the search panel still consumes from the seed. */
+export type MockAttendee = {
+  email: string
+  displayName?: string
+  photoUrl?: string
+  self?: boolean
+  organizer?: boolean
+  response?: "needsAction" | "accepted" | "declined" | "tentative"
+}
 
 /** A calendar the user has access to. */
 export type CalendarListItem = {

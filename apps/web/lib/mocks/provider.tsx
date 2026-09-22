@@ -12,9 +12,9 @@ import {
 import type {
   Availability,
   Booking,
-  CalendarEvent,
   CalendarListItem,
   Connection,
+  MockSearchEvent,
   Notification,
   UserPreferences,
   UserProfile,
@@ -34,9 +34,12 @@ import {
  * In-memory mocks store. Hooks underneath read and mutate here; the Provider
  * owns the state so React batches updates and consumers re-render on writes.
  *
- * The shape mirrors the slice each Convex domain would have exposed:
- *   user, preferences, calendars, connections, events, bookings,
- *   availability, notifications.
+ * Calendar events (`events`) are read from the API via TanStack Query
+ * (`useListEventsInRange`) for the grid / drag / detail panels. The
+ * `events` field on this provider remains so legacy surfaces
+ * (`useSearch`, the search panel) keep their seed index working until
+ * search migrates too. There are no event *mutations* exposed — only
+ * reads.
  */
 type State = {
   user: UserProfile;
@@ -44,7 +47,7 @@ type State = {
   selectedCalendarIds: Set<string>;
   connections: Connection[];
   calendars: CalendarListItem[];
-  events: CalendarEvent[];
+  events: MockSearchEvent[];
   bookings: Booking[];
   availability: Availability[];
   notifications: Notification[];
@@ -70,9 +73,6 @@ type MocksContextValue = {
   // Helper "actions" — exposed for ergonomic writes from hooks below.
   setPreferences: (patch: Partial<UserPreferences>) => void;
   setCalendarSelected: (calendarId: string, selected: boolean) => void;
-  upsertEvent: (event: CalendarEvent) => void;
-  deleteEvent: (id: string) => void;
-  moveEvent: (id: string, startMs: number, endMs: number) => void;
   setAvailability: (dayKey: string, intervals: Availability["intervals"]) => void;
   setNotificationRead: (id: string, read: boolean) => void;
   decideBooking: (id: string, status: "confirmed" | "declined") => void;
@@ -103,32 +103,6 @@ export function MocksProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const upsertEvent = useCallback((event: CalendarEvent) => {
-    setState((prev) => {
-      const idx = prev.events.findIndex((e) => e._id === event._id);
-      if (idx === -1) return { ...prev, events: [...prev.events, event] };
-      const next = prev.events.slice();
-      next[idx] = event;
-      return { ...prev, events: next };
-    });
-  }, []);
-
-  const deleteEvent = useCallback((id: string) => {
-    setState((prev) => ({
-      ...prev,
-      events: prev.events.filter((e) => e._id !== id),
-    }));
-  }, []);
-
-  const moveEvent = useCallback((id: string, startMs: number, endMs: number) => {
-    setState((prev) => ({
-      ...prev,
-      events: prev.events.map((e) =>
-        e._id === id ? { ...e, startMs, endMs } : e,
-      ),
-    }));
-  }, []);
-
   const setAvailability = useCallback(
     (dayKey: string, intervals: Availability["intervals"]) => {
       setState((prev) => {
@@ -157,43 +131,12 @@ export function MocksProvider({ children }: { children: ReactNode }) {
 
   const decideBooking = useCallback(
     (id: string, status: "confirmed" | "declined") => {
-      setState((prev) => {
-        const bookings = prev.bookings.map((b) =>
+      setState((prev) => ({
+        ...prev,
+        bookings: prev.bookings.map((b) =>
           b._id === id ? { ...b, status } : b,
-        );
-        const events =
-          status === "confirmed"
-            ? prev.events.map((e) => {
-                const b = prev.bookings.find((bk) => bk._id === id);
-                if (!b) return e;
-                return e;
-              })
-            : prev.events;
-        // When confirming, also seed a calendar event from the booking.
-        const booking = prev.bookings.find((b) => b._id === id);
-        if (status === "confirmed" && booking) {
-          const newEvent: CalendarEvent = {
-            _id: `evt_from_${booking._id}`,
-            localCalendarId: "cal_personal_primary",
-            summary: `Meeting with ${booking.requesterName}`,
-            startMs: booking.startMs,
-            endMs: booking.endMs,
-            color: "6",
-            attendees: [
-              {
-                email: booking.requesterEmail,
-                displayName: booking.requesterName,
-              },
-            ],
-          };
-          return {
-            ...prev,
-            bookings,
-            events: [...prev.events, newEvent],
-          };
-        }
-        return { ...prev, bookings };
-      });
+        ),
+      }));
     },
     [],
   );
@@ -204,9 +147,6 @@ export function MocksProvider({ children }: { children: ReactNode }) {
       setState,
       setPreferences,
       setCalendarSelected,
-      upsertEvent,
-      deleteEvent,
-      moveEvent,
       setAvailability,
       setNotificationRead,
       decideBooking,
@@ -216,9 +156,6 @@ export function MocksProvider({ children }: { children: ReactNode }) {
       setState,
       setPreferences,
       setCalendarSelected,
-      upsertEvent,
-      deleteEvent,
-      moveEvent,
       setAvailability,
       setNotificationRead,
       decideBooking,

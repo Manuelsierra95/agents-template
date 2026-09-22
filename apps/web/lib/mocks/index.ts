@@ -1,5 +1,4 @@
 export { MocksProvider, useMocks } from "./provider";
-export * from "./use-events";
 export * from "./use-calendars";
 export * from "./use-preferences";
 export * from "./use-notifications";

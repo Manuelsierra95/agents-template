@@ -1,12 +1,10 @@
-import { Video01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { cn } from "@workspace/ui/lib/utils";
 import { format } from "date-fns";
 import { motion } from "motion/react";
 
 import { usePreferences } from "@/components/workspace/preferences-context";
 
-import { Avatar } from "./avatar";
+import type { CalendarEvent } from "@/lib/calendar/types";
 import { useEventColor } from "./colors";
 import {
   EVENT_LEFT_GUTTER_PX,
@@ -27,7 +25,9 @@ interface EventCardProps {
   /** Lay overlaps out as side-by-side columns (day view) instead of the cascade
    * (week view), where the column is too narrow to subdivide. */
   laneLayout: boolean;
-  /** Synced contact photos keyed by lower-cased email. */
+  /** Synced contact photos keyed by lower-cased email. (No longer sourced
+   * from event attendees — we keep the prop so the call site stays
+   * unchanged when we add real guest data.) */
   contactPhotos: ReadonlyMap<string, string>;
   /** The active reveal target; pulses this card when it's the one reached for. */
   reveal: Reveal;
@@ -48,7 +48,7 @@ export function EventCard({
   positioned,
   isDragging,
   laneLayout,
-  contactPhotos,
+  contactPhotos: _contactPhotos,
   reveal,
   onDragStart,
 }: EventCardProps) {
@@ -66,8 +66,7 @@ export function EventCard({
   const { use24h, timeZone } = usePreferences();
   // An event the user can't reschedule still opens on tap, but it shouldn't
   // offer a grab cursor or resize edges for a drag that will never happen.
-  const { canEdit: draggable, canSeeGuests } = useEventCapabilities()(event);
-  const attendees = canSeeGuests ? (event.attendees ?? []).slice(0, 3) : [];
+  const { canEdit: draggable } = useEventCapabilities()(event);
   // The dragged event must never sit *on top* of a longer neighbour covering
   // its title. In both Day and Week view, two overlapping cards get a strict
   // tile (advance = 1) so they sit cleanly side-by-side with no horizontal
@@ -137,7 +136,7 @@ export function EventCard({
     >
       <RevealFlash
         reveal={reveal}
-        targetId={[event._id, event.providerEventId]}
+        targetId={[event.id]}
         className="rounded-lg bg-[color-mix(in_oklab,var(--primary)_45%,transparent)]"
       />
       <span
@@ -155,36 +154,6 @@ export function EventCard({
         <p className="event-card-time truncate text-muted-foreground">
           {`${format(zoned(event.startMs, timeZone), timePattern(use24h, false))} – ${format(zoned(event.endMs, timeZone), timePattern(use24h))}`}
         </p>
-        {(attendees.length > 0 || event.conferenceUrl) && (
-          <div className="event-card-meta mt-auto min-w-0 items-center justify-between gap-1 pt-1">
-            {attendees.length > 0 && (
-              <span className="event-card-attendees flex min-w-0 items-center">
-                {attendees.map((attendee) => (
-                  <span
-                    key={attendee.email}
-                    className="event-card-attendee relative -ml-1.5 shrink-0 rounded-full ring-1 ring-background/80 first:ml-0"
-                  >
-                    <Avatar
-                      email={attendee.email}
-                      name={attendee.displayName}
-                      photoUrl={contactPhotos.get(attendee.email.toLowerCase())}
-                      className="size-5 text-[0.625rem]"
-                    />
-                  </span>
-                ))}
-              </span>
-            )}
-            {event.conferenceUrl && (
-              <span
-                role="img"
-                aria-label="Video call attached"
-                className="event-card-meeting ml-auto shrink-0 text-muted-foreground/45"
-              >
-                <HugeiconsIcon icon={Video01Icon} size={15} strokeWidth={1.8} />
-              </span>
-            )}
-          </div>
-        )}
       </div>
       {/* Edge handles for resizing start/end. Invisible until hover so they
           don't clutter the card, but always hit-testable. */}

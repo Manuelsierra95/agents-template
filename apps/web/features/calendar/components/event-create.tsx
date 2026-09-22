@@ -1,14 +1,14 @@
+"use client";
+
 import { Button } from "@workspace/ui/components/button";
 import { Spinner } from "@workspace/ui/components/spinner";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { usePreferences } from "@/components/workspace/preferences-context";
-import {
-  useCreateEvent,
-  useListCalendars,
-} from "@/lib/mocks";
-import type { CalendarListItem } from "@/lib/mocks/types";
+import { useCreateEvent } from "@/features/calendar/hooks/use-calendar-events";
+import { useListCalendars } from "@/lib/mocks/use-calendars";
+import type { CalendarListItem } from "@/lib/calendar/types";
 
 import {
   EventForm,
@@ -23,18 +23,13 @@ import { isWritableCalendar, pickPrimaryCalendar } from "./lib";
 const FULL_CAPABILITIES: FormCapabilities = {
   canEdit: true,
   canDelete: true,
-  canInvite: true,
-  canSeeGuests: true,
-  canSeeConference: true,
-  canInviteOthers: true,
-  canChangeRecurrence: true,
 };
 
 /** Fields a duplicate carries over from the event it was copied from. The times
  * are not among them — those ride on the dock's create view, so the ghost on
  * the grid keeps following them. */
 export type EventPrefill = Partial<
-  Omit<EventFormValue, "startMs" | "endMs" | "recurrence">
+  Omit<EventFormValue, "startMs" | "endMs">
 >;
 
 export function EventCreate({
@@ -58,26 +53,18 @@ export function EventCreate({
   const { raw: preferences, timeZone } = usePreferences();
   const defaultCalendarId = preferences.defaultCalendarId;
   const [submitting, setSubmitting] = useState(false);
-  // Idempotency key for this create intent: minted once and reused across retries
-  // (a lost response / re-submit) so the backend dedupes to one Google event
-  // instead of creating a duplicate. Cleared only on success.
-  const operationIdRef = useRef<string | null>(null);
-  // Everything but the range. All three "inherit" defaults mean the same thing:
+  // Everything but the range. Two "inherit" defaults mean the same thing:
   // no colour override, the primary calendar (resolved server-side when unset),
   // and the calendar's own visibility.
   const [draft, setDraft] = useState<Omit<EventFormValue, "startMs" | "endMs">>({
     summary: "",
     description: "",
     location: "",
-    meet: false,
     allDay: false,
     isPrivate: false,
-    // Busy is the provider default, so the toggle starts there.
     busy: true,
     color: undefined,
     calendarId: undefined,
-    guests: [],
-    recurrence: null,
     ...prefill,
   });
 
@@ -109,63 +96,33 @@ export function EventCreate({
     if (!valid || submitting) return;
     setSubmitting(true);
     const times = toEventTimes(value, timeZone);
-    if (!operationIdRef.current) {
-      operationIdRef.current = crypto.randomUUID();
-    }
-    void createEvent({
-      _id: undefined,
-      localCalendarId: activeCalendarId ?? "cal_personal_primary",
-      summary: value.summary.trim() || "New event",
-      startMs: times.startMs,
-      endMs: times.endMs,
-      allDay: value.allDay,
-      description: value.description || undefined,
-      location: value.meet ? undefined : value.location.trim() || undefined,
-      conferenceUrl: value.meet ? `https://meet.google.com/mock-${operationIdRef.current}` : undefined,
-      color: value.color,
-      capabilities: FULL_CAPABILITIES,
-      attendees:
-        value.guests.length > 0
-          ? value.guests.map((g) => ({
-              email: g.email,
-              displayName: g.displayName,
-            }))
-          : [],
-      repeat: value.recurrence
-        ? {
-            freq: value.recurrence.freq,
-            interval: value.recurrence.interval,
-            until:
-              value.recurrence.end.kind === "onDate"
-                ? value.recurrence.end.dateMs
-                : undefined,
-            count:
-              value.recurrence.end.kind === "count"
-                ? value.recurrence.end.count
-                : undefined,
-            byWeekday: value.recurrence.byWeekday
-              ? (value.recurrence.byWeekday
-                  .map((w) => WEEKDAY_TO_NUM[w])
-                  .filter((n): n is number => n !== undefined))
-              : undefined,
-            byMonthDay: undefined,
-          }
-        : undefined,
-    })
-      .then(() => {
-        operationIdRef.current = null;
-        onCreated();
-      })
-      .catch((error: unknown) => {
-        setSubmitting(false);
-        toast.error("Couldn't create event", {
-          description: error instanceof Error ? error.message : undefined,
-        });
-      });
+    createEvent.mutate(
+      {
+        summary: value.summary.trim() || "New event",
+        startMs: times.startMs,
+        endMs: times.endMs,
+        allDay: value.allDay,
+        ...(value.description ? { description: value.description } : {}),
+        ...(value.location.trim() ? { location: value.location.trim() } : {}),
+        ...(value.color ? { color: value.color } : {}),
+      },
+      {
+        onSuccess: () => {
+          setSubmitting(false);
+          onCreated();
+        },
+        onError: (error) => {
+          setSubmitting(false);
+          toast.error("Couldn't create event", {
+            description: error instanceof Error ? error.message : undefined,
+          });
+        },
+      },
+    );
   };
 
   return (
-      <EventForm
+    <EventForm
       value={value}
       onChange={onChange}
       onChangeRange={onChangeRange}
@@ -188,14 +145,3 @@ export function EventCreate({
     />
   );
 }
-
-/** RRULE weekday token → JS day-of-week (0 = Sunday). */
-const WEEKDAY_TO_NUM: Record<string, number> = {
-  SU: 0,
-  MO: 1,
-  TU: 2,
-  WE: 3,
-  TH: 4,
-  FR: 5,
-  SA: 6,
-};

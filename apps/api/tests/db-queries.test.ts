@@ -25,6 +25,12 @@ import {
   upsertCustomerByPhone,
 } from "@workspace/db/queries/customers"
 import {
+  BatchMoveError,
+  batchMoveEvents,
+  createEvent,
+  getEventById,
+} from "@workspace/db/queries/events"
+import {
   appendMessageAndTouchConversation,
   findOrCreateConversation,
   getConversationById,
@@ -362,6 +368,65 @@ skipIfNoDb("db queries (Phase 2D)", () => {
       expect(fromDb?.service).toBe("corte")
       expect(fromDb?.date).toBe("2025-01-15")
       expect(fromDb?.time).toBe("10:00")
+    })
+  })
+
+  describe("calendar events batch move", () => {
+    it("applies every move in a single transaction", async () => {
+      const a = await createEvent(handle.db, {
+        organizationId: ORG,
+        createdBy: null,
+        summary: "A",
+        startMs: 1000,
+        endMs: 2000,
+      })
+      const b = await createEvent(handle.db, {
+        organizationId: ORG,
+        createdBy: null,
+        summary: "B",
+        startMs: 3000,
+        endMs: 4000,
+      })
+
+      const updated = await batchMoveEvents(handle.db, {
+        organizationId: ORG,
+        moves: [
+          { id: a.id, startMs: 5000, endMs: 6000 },
+          { id: b.id, startMs: 7000, endMs: 8000 },
+        ],
+      })
+
+      expect(updated).toHaveLength(2)
+      expect(updated.find((e) => e.id === a.id)?.startMs).toBe(5000)
+      expect(updated.find((e) => e.id === b.id)?.startMs).toBe(7000)
+    })
+
+    it("rolls back when any id is unknown", async () => {
+      const a = await createEvent(handle.db, {
+        organizationId: ORG,
+        createdBy: null,
+        summary: "A",
+        startMs: 1000,
+        endMs: 2000,
+      })
+
+      await expect(
+        batchMoveEvents(handle.db, {
+          organizationId: ORG,
+          moves: [
+            { id: a.id, startMs: 5000, endMs: 6000 },
+            { id: "00000000-0000-0000-0000-deadbeef0000", startMs: 7, endMs: 8 },
+          ],
+        }),
+      ).rejects.toBeInstanceOf(BatchMoveError)
+
+      // `a` must still be at its original time — the transaction rolled back.
+      const fromDb = await getEventById(handle.db, {
+        organizationId: ORG,
+        id: a.id,
+      })
+      expect(fromDb?.startMs).toBe(1000)
+      expect(fromDb?.endMs).toBe(2000)
     })
   })
 })

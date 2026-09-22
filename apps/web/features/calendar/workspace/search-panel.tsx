@@ -14,8 +14,8 @@ import {
   fromUtcMidnight,
   zoned,
   zonedNow,
-  type CalendarEvent,
 } from "../components/lib"
+import type { CalendarEvent } from "@/lib/calendar/types"
 import { useMyUser } from "@/lib/mocks/use-preferences"
 import { useDock, type RevealInput } from "./dock-context"
 import { usePreferences } from "./preferences-context"
@@ -58,7 +58,7 @@ function revealFor(event: CalendarEvent, timeZone: string): RevealInput {
         zoned(fromUtcMidnight(event.startMs, timeZone), timeZone)
       ).getTime()
     : event.startMs
-  return { startMs, flashId: event._id }
+  return { startMs, flashId: event.id }
 }
 
 /** The dock's search face: a title search over the available events. Picking
@@ -112,7 +112,7 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
     // accept simplified rows — just use what `useSearch` returns.
     void ids
     void calendarDisplayName
-    return search.events as CalendarEvent[]
+    return search.events as unknown as CalendarEvent[]
   }, [debounced, search.events, calendars])
   if (results !== undefined) lastResults.current = results
   const loading = debounced !== "" && results === undefined
@@ -210,13 +210,14 @@ export function SearchPanel({ onClose }: { onClose: () => void }) {
         >
           {list.map((event, index) => {
             const colorVar = colorFor(event)
-            const calendarName = event.localCalendarId
-              ? calendars.get(event.localCalendarId)
-              : undefined
+            // The wire shape no longer carries `localCalendarId`. We keep
+            // the search results' "where" rendering as a simple summary
+            // until the calendar metadata layer ships.
+            const calendarName = undefined
             return (
               <button
                 type="button"
-                key={event._id}
+                key={event.id}
                 id={`${listId}-${index}`}
                 data-index={index}
                 role="option"

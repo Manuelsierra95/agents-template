@@ -4,7 +4,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useDock } from "@/components/workspace/dock-context";
 import { usePreferences } from "@/components/workspace/preferences-context";
-import type { CalendarEvent } from "@/lib/mocks/types";
+import type { CalendarEvent } from "@/lib/calendar/types";
 
 import { useEventColor } from "./colors";
 import {
@@ -127,7 +127,7 @@ export function MonthPanel({ monthStart, days, events, onSelectDay, reveal }: Mo
                   const colorVar = colorFor(event);
                   return (
                     <span
-                      key={event._id}
+                      key={event.id}
                       data-event
                       onClick={(e) => {
                         // Don't let the day cell's onSelectDay fire too.

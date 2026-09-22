@@ -2,10 +2,9 @@ import {
   ArrowLeft01Icon,
   Calendar03Icon,
   Location01Icon,
-  RepeatIcon,
+  Sun03Icon,
   SquareLock01Icon,
   SquareUnlock01Icon,
-  Sun03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
 import { Tooltip } from "@workspace/ui/components/tooltip";
@@ -16,17 +15,11 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useRef, useState, type ReactNode } from "react";
 
 import { usePreferences } from "@/components/workspace/preferences-context";
-import type {
-  CalendarEvent,
-  CalendarListItem,
-  EventCapabilities,
-} from "@/lib/mocks/types";
+import type { CalendarListItem, EventCapabilities } from "@/lib/calendar/types";
 
 import { DayPicker } from "./day-picker";
 import { EventControls } from "./event-controls";
 import { FreeBusyToggle } from "./free-busy-toggle";
-import { GoogleMeetIcon } from "./google-meet-icon";
-import { GuestPicker, type Guest } from "./guest-picker";
 import {
   fromUtcMidnight,
   MS_PER_DAY,
@@ -40,13 +33,13 @@ import {
   press,
   SPRING_DOCK,
 } from "./motion";
-import { RepeatControl } from "./repeat-control";
-import type { Recurrence } from "./rrule";
 
 /** Wheel rows. Module-level so their identity is stable across renders — the
  * picker re-derives its geometry and index whenever `options` changes. */
 const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
-const HOURS_24 = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));
+const HOURS_24 = Array.from({ length: 24 }, (_, i) =>
+  String(i).padStart(2, "0"),
+);
 const MINUTE_STEP = 5;
 const MINUTES = Array.from({ length: 60 / MINUTE_STEP }, (_, i) =>
   String(i * MINUTE_STEP).padStart(2, "0"),
@@ -99,27 +92,23 @@ function withParts(
 /** Move `baseMs` onto `dayMs`'s calendar day (working zone), keeping its
  * time of day. */
 function withDay(baseMs: number, dayMs: number, timeZone: string): number {
-  const day = zoned(dayMs, timeZone);
-  const d = zoned(baseMs, timeZone);
-  d.setFullYear(day.getFullYear(), day.getMonth(), day.getDate());
+  const b = zoned(baseMs, timeZone);
+  const d = zoned(dayMs, timeZone);
+  d.setHours(b.getHours(), b.getMinutes(), 0, 0);
   return d.getTime();
 }
 
-/** UTC midnight of a timestamp's working-zone calendar day — the instant
- * Google's all-day date strings map to (see mapGoogleEvent / toGoogleTime on
- * the backend). All-day events are stored and sent as these UTC-midnight
- * instants. */
+/** UTC midnight of the calendar day that contains `ms` in the working zone.
+ * `end` for an all-day event is the exclusive midnight of the day AFTER the
+ * last day, so a 1-day all-day event spans [dayStart, dayStart + MS_PER_DAY).
+ */
 function toUtcMidnight(ms: number, timeZone: string): number {
   const d = zoned(ms, timeZone);
   return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-/** Local extension of `EventCapabilities` covering the legacy fields the form
- * still reads (the rich backend used `canInviteOthers`/`canChangeRecurrence`
- * directly; we synthesise them from the local shape at the call sites). */
 export interface FormCapabilities extends EventCapabilities {
-  canInviteOthers: boolean;
-  canChangeRecurrence: boolean;
+  /** Reserved for read-only events (a guest on someone else's calendar). */
   readOnlyReason?: string;
 }
 
@@ -128,17 +117,8 @@ export interface FormCapabilities extends EventCapabilities {
  * working; `toEventTimes` converts them at submit. */
 export interface EventFormValue {
   summary: string;
-  /** Plain text. (The rich-text editor ships in a later phase; for now this is
-   * a textarea string.) */
   description: string;
   location: string;
-  /** Whether the event has (or should get) a Google Meet. The "Where" row is a
-   * switch: `false` shows the location input, `true` swaps it for the Meet chip.
-   * On create this is the intent to mint a link; on edit it toggles one on/off. */
-  meet: boolean;
-  /** An already-minted conference URL, for display. Only set on an existing
-   * event. */
-  conferenceUrl?: string;
   startMs: number;
   endMs: number;
   allDay: boolean;
@@ -148,9 +128,6 @@ export interface EventFormValue {
   color?: string;
   /** Local calendar identity used for create targeting. */
   calendarId?: string;
-  guests: Guest[];
-  /** null = does not repeat. */
-  recurrence: Recurrence | null;
 }
 
 export function isEventFormValid(value: EventFormValue): boolean {
@@ -180,15 +157,22 @@ export function toEventTimes(
  * the end tab shows the last day of the event rather than the exclusive one
  * after it. */
 export function formValueFromEvent(
-  event: CalendarEvent,
+  event: {
+    summary: string | null;
+    description: string | null;
+    location: string | null;
+    startMs: number;
+    endMs: number;
+    allDay: boolean;
+    color: string | null;
+    calendarId?: string;
+  },
   timeZone: string,
 ): EventFormValue {
   return {
     summary: event.summary ?? "",
     description: event.description ?? "",
     location: event.location ?? "",
-    meet: Boolean(event.conferenceUrl),
-    conferenceUrl: event.conferenceUrl,
     startMs: event.allDay
       ? fromUtcMidnight(event.startMs, timeZone)
       : event.startMs,
@@ -198,15 +182,8 @@ export function formValueFromEvent(
     allDay: event.allDay ?? false,
     isPrivate: false,
     busy: true,
-    color: event.color,
-    calendarId: event.localCalendarId,
-    guests: (event.attendees ?? []).map((a) => ({
-      email: a.email,
-      displayName: a.displayName,
-      responseStatus: a.response,
-      organizer: a.organizer,
-    })),
-    recurrence: null,
+    color: event.color ?? undefined,
+    calendarId: event.calendarId,
   };
 }
 
@@ -535,40 +512,16 @@ export function EventForm({
             />
           </SettingRow>
 
-          <SettingRow icon={RepeatIcon} label="Repeat">
-            {capabilities.canChangeRecurrence ? (
-              <RepeatControl
-                startMs={value.startMs}
-                value={value.recurrence}
-                onChange={(recurrence) => onChange({ recurrence })}
-              />
-            ) : (
-              <span className="px-2 py-1 text-sm text-muted-foreground">
-                {/* We sync with singleEvents=true, so we hold an expanded
-                    instance and never the rule that produced it. */}
-                {value.recurrence === null && capabilities.canEdit
-                  ? "Part of a repeating series"
-                  : "Does not repeat"}
-              </span>
-            )}
+          <SettingRow icon={Location01Icon} label="Location">
+            <input
+              value={value.location}
+              readOnly={!canEdit}
+              onChange={(e) => onChange({ location: e.target.value })}
+              placeholder={canEdit ? "Add location" : "None"}
+              aria-label="Location"
+              className="min-w-0 rounded-lg bg-transparent px-2 py-1 text-sm font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring read-only:hover:bg-transparent"
+            />
           </SettingRow>
-
-          <WhereRow
-            location={value.location}
-            meet={value.meet}
-            conferenceUrl={value.conferenceUrl}
-            canEdit={canEdit}
-            onLocationChange={(location) => onChange({ location })}
-            onMeetChange={(meet) => onChange({ meet })}
-          />
-
-          <GuestPicker
-            value={value.guests}
-            onChange={(guests) => onChange({ guests })}
-            readOnly={!capabilities.canInviteOthers}
-            readOnlyReason={capabilities.readOnlyReason}
-            hidden={!capabilities.canSeeGuests}
-          />
 
           {!valid && (
             <p className="text-xs text-destructive">
@@ -662,120 +615,6 @@ function SettingRow({
       <span className="shrink-0 text-sm text-muted-foreground">{label}</span>
       <div className="ml-auto flex min-w-0 items-center">{children}</div>
     </div>
-  );
-}
-
-/** The "where" of the event: a physical location *or* a video call, on one line
- * instead of two rows. A caller adding a Meet isn't usually also typing an
- * address, so the two are mutually exclusive modes of the same row — the switch
- * follows the leading icon and flips the trailing control between the location
- * input and the Google Meet chip. */
-function WhereRow({
-  location,
-  meet,
-  conferenceUrl,
-  canEdit,
-  onLocationChange,
-  onMeetChange,
-}: {
-  location: string;
-  meet: boolean;
-  conferenceUrl?: string;
-  canEdit: boolean;
-  onLocationChange: (location: string) => void;
-  onMeetChange: (meet: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      {meet ? (
-        <GoogleMeetIcon className="size-4.5 shrink-0" />
-      ) : (
-        <HugeiconsIcon
-          icon={Location01Icon}
-          strokeWidth={2}
-          className="size-4.5 shrink-0 text-muted-foreground"
-        />
-      )}
-      {/* -ml-2 cancels the child's px-2 so its text lines up with the plain
-          labels on the other rows, while the padding still gives the hover
-          background breathing room. */}
-      <div className="-ml-2 flex min-w-0 flex-1 items-center">
-        {meet ? (
-          conferenceUrl ? (
-            <a
-              href={conferenceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="truncate rounded-lg px-2 py-1 text-sm font-medium text-emerald-600 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring dark:text-emerald-400"
-            >
-              Google Meet
-            </a>
-          ) : (
-            <span className="px-2 py-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-              Google Meet
-            </span>
-          )
-        ) : (
-          <input
-            value={location}
-            readOnly={!canEdit}
-            onChange={(e) => onLocationChange(e.target.value)}
-            placeholder={canEdit ? "Add location" : "None"}
-            aria-label="Location"
-            className="w-full min-w-0 rounded-lg bg-transparent px-2 py-1 text-sm font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring read-only:hover:bg-transparent"
-          />
-        )}
-      </div>
-      {canEdit && (
-        <div className="flex shrink-0 gap-1 rounded-lg bg-muted p-0.5">
-          <WhereTab
-            label="In person"
-            active={!meet}
-            onSelect={() => onMeetChange(false)}
-          />
-          <WhereTab
-            label="Video"
-            active={meet}
-            accent
-            onSelect={() => onMeetChange(true)}
-          />
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** One segment of the "Where" switch. Mirrors the Starts/Ends time tabs so the
- * two segmented controls in the form read as the same kind of thing. */
-function WhereTab({
-  label,
-  active,
-  accent,
-  onSelect,
-}: {
-  label: string;
-  active: boolean;
-  /** Tint the label green while active — used for the "Video" segment. */
-  accent?: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <motion.button
-      type="button"
-      aria-pressed={active}
-      onClick={onSelect}
-      {...press}
-      className={cn(
-        "rounded-md px-3 py-0.5 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        active
-          ? accent
-            ? "bg-background text-emerald-600 shadow-sm dark:text-emerald-400"
-            : "bg-background text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground",
-      )}
-    >
-      {label}
-    </motion.button>
   );
 }
 

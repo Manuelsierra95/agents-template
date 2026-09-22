@@ -15,6 +15,7 @@ import { makeAvailabilityRoute } from "@/modules/internal/availability.route"
 import { makeBookingRoute } from "@/modules/internal/bookings.route"
 import { makeConversationRoute } from "@/modules/conversations/conversations.route"
 import { makeChatRoute } from "@/modules/chat/chat.route"
+import { makeCalendarEventsRoute } from "@/modules/calendar/events.route"
 import { getOrCreateSseHub, resetSseHubForTests } from "@/lib/realtime/sse-hub"
 import type { RealtimeEventBus } from "@/lib/realtime/event-bus"
 import { logger } from "@/lib/logger"
@@ -143,6 +144,16 @@ export function createApp(
   // session cookie.
   conversations.route("/messages", makeChatRoute())
   api.route("/chat", conversations)
+
+  // Phase 2F — operator-facing calendar events CRUD. Session-authenticated
+  // for the same reason as `/api/chat` and `/api/conversations`:
+  // the dashboard is multi-tenant and the row scope flows from
+  // `ctx.var.auth.organizationId`. Realtime updates are published via
+  // `c.var.eventBus`; consumers (`apps/web`) listen on `/api/events`.
+  const calendar = new Hono<AppEnv>()
+  calendar.use("*", requireAuth)
+  calendar.route("/events", makeCalendarEventsRoute())
+  api.route("/calendar", calendar)
 
   app.route("/api", api)
 

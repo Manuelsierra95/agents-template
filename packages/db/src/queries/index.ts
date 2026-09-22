@@ -26,3 +26,17 @@ export {
   appendMessageAndTouchConversation,
   listMessages,
 } from "@workspace/db/queries/conversations.ts"
+
+export {
+  createEvent,
+  getEventById,
+  listEventsInRange,
+  listEventsAfter,
+  listEventsBefore,
+  updateEvent,
+  moveEvent,
+  batchMoveEvents,
+  BatchMoveError,
+  deleteEvent,
+  calendarEventStatus,
+} from "@workspace/db/queries/events.ts"

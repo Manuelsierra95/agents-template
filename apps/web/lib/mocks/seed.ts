@@ -30,12 +30,12 @@ export const SEED_NOW = new Date("2026-09-07T12:00:00").getTime();
 import type {
   Availability,
   Booking,
-  CalendarEvent,
   CalendarListItem,
   Connection,
   Notification,
   UserPreferences,
   UserProfile,
+  MockSearchEvent,
 } from "./types";
 
 /**
@@ -142,7 +142,7 @@ export const SEED_CALENDARS: CalendarListItem[] = [
   },
 ];
 
-export const SEED_EVENTS: CalendarEvent[] = [
+export const SEED_EVENTS: MockSearchEvent[] = [
   // Monday — focus blocks, meetings, lunch
   {
     _id: "evt_mon_standup",

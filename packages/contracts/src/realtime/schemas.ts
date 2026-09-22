@@ -68,6 +68,33 @@ export const AppointmentUpdatedEventSchema = z.object({
   conversationId: z.string().min(1).optional(),
 })
 
+/**
+ * Calendar event lifecycle. Top-level — no `conversationId` (the
+ * dashboard's calendar grid and detail panel don't belong to a chat
+ * thread).
+ *
+ * Published by `apps/api/src/modules/calendar/events.route.ts` on
+ * every successful write. Consumed by `apps/web/lib/realtime/use-event-stream.ts`,
+ * which invalidates the React Query cache for the `events` slice.
+ */
+export const EventCreatedEventSchema = z.object({
+  type: z.literal("event.created"),
+  organizationId: z.string().min(1),
+  timestamp: z.string().datetime(),
+})
+
+export const EventUpdatedEventSchema = z.object({
+  type: z.literal("event.updated"),
+  organizationId: z.string().min(1),
+  timestamp: z.string().datetime(),
+})
+
+export const EventDeletedEventSchema = z.object({
+  type: z.literal("event.deleted"),
+  organizationId: z.string().min(1),
+  timestamp: z.string().datetime(),
+})
+
 export const RealtimeEventSchema = z.discriminatedUnion("type", [
   MessageCreatedEventSchema,
   ActivityCreatedEventSchema,
@@ -77,6 +104,9 @@ export const RealtimeEventSchema = z.discriminatedUnion("type", [
   ConversationCreatedEventSchema,
   AppointmentCreatedEventSchema,
   AppointmentUpdatedEventSchema,
+  EventCreatedEventSchema,
+  EventUpdatedEventSchema,
+  EventDeletedEventSchema,
 ])
 
 export const REALTIME_EVENT_TYPES = [
@@ -88,6 +118,9 @@ export const REALTIME_EVENT_TYPES = [
   "conversation.created",
   "appointment.created",
   "appointment.updated",
+  "event.created",
+  "event.updated",
+  "event.deleted",
 ] as const
 
 export type RealtimeEventType = (typeof REALTIME_EVENT_TYPES)[number]

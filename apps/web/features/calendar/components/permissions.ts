@@ -2,44 +2,36 @@
 
 import { useCallback } from "react";
 
-import type { CalendarEvent } from "@/lib/mocks/types";
-import { useMyUser } from "@/lib/mocks/use-preferences";
-import { useMocks } from "@/lib/mocks";
+import { useSession } from "@/features/auth";
+import type {
+  CalendarEvent,
+  EventCapabilities,
+} from "@/lib/calendar/types";
 
 /**
- * Capability gating for an event the user is interacting with.
+ * Capability gating for a calendar event.
  *
- * In the demo there is no real backend; every event sits on one of the user's
- * calendars, so the user is the implicit owner. Any event on a calendar that
- * the user marks as "selected" (or any of their calendars if no selection
- * tracking yet exists) is editable. Read-only events are kept as a future
- * extension point — guests only on someone else's calendar, for example.
+ * The rule is simple: an operator can edit/delete an event they
+ * created. Anything else is read-only. The backend trusts this — it
+ * doesn't enforce per-user write permissions on the row, only
+ * org-scoping on the query — so a UI bug here can leak across users.
+ *
+ * `useSession` comes from Better Auth's reactive session; the user's
+ * `id` here is the real auth subject, not the seed-mock user.
  */
 export function useEventCapabilities() {
-  const user = useMyUser();
-  const { state } = useMocks();
+  const session = useSession();
+  const userId =
+    session.status === "authenticated" ? session.user.id : null;
   return useCallback(
-    (event: CalendarEvent) => {
-      const ownerCalendar = state.calendars.find(
-        (c) => c._id === event.localCalendarId,
-      );
-      const isMine =
-        !!ownerCalendar &&
-        (state.selectedCalendarIds.has(ownerCalendar._id) ||
-          ownerCalendar.primary ||
-          event.attendees?.some(
-            (a) =>
-              a.email.toLowerCase() === user.email &&
-              (a.organizer || a.self),
-          ));
+    (event: CalendarEvent): EventCapabilities => {
+      const live = event.status !== "cancelled";
+      const mine = userId !== null && event.createdBy === userId;
       return {
-        canEdit: event.status !== "cancelled" && (isMine ?? true),
-        canDelete: isMine ?? true,
-        canInvite: isMine ?? true,
-        canSeeGuests: true,
-        canSeeConference: true,
+        canEdit: live && mine,
+        canDelete: mine,
       };
     },
-    [user.email, state.calendars, state.selectedCalendarIds],
+    [userId],
   );
 }

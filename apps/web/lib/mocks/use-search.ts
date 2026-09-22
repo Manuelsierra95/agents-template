@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import type { Attendee } from "./types";
+import type { MockAttendee } from "./types";
 import { useMocks } from "./provider";
 
 export type Contact = {

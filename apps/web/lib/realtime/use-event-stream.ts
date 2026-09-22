@@ -23,7 +23,7 @@ import {
   RealtimeEventSchema,
   type RealtimeEvent,
 } from "@workspace/contracts/realtime"
-import { conversationsKeys } from "@/lib/query/keys"
+import { conversationsKeys, eventsKeys } from "@/lib/query/keys"
 
 export function useEventStream(): void {
   const queryClient = useQueryClient()
@@ -95,6 +95,17 @@ export function useEventStream(): void {
           }
           return
         }
+        case "event.created":
+        case "event.updated":
+        case "event.deleted":
+          // Calendar events: invalidating `eventsKeys.all` cascades to
+          // every cached range that could overlap the touched row.
+          // The hooks in `use-calendar-events.ts` pick up the new data
+          // on their next read (immediate when the panel refetches on
+          // mutation, lazy otherwise — TanStack Query's staleTime
+          // window keeps the cache quiet during normal navigation).
+          queryClient.invalidateQueries({ queryKey: eventsKeys.all })
+          return
       }
     }
 

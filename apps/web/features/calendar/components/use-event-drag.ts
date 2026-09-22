@@ -3,8 +3,6 @@
 import { startOfDay } from "date-fns";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useMocks } from "@/lib/mocks";
-
 import {
   type CalendarEvent,
   MS_PER_DAY,
@@ -13,6 +11,7 @@ import {
 } from "./lib";
 import { useEventCapabilities } from "./permissions";
 
+import { usePendingMoves } from "../hooks/use-pending-moves";
 import { useDock } from "../workspace/dock-context";
 
 export type DragMode = "move" | "resize-start" | "resize-end";
@@ -62,7 +61,7 @@ export function useEventDrag(
   days: Date[],
   timeZone: string,
 ): UseEventDrag {
-  const { moveEvent } = useMocks();
+  const { moveEvent } = usePendingMoves();
   const { open } = useDock();
 
   const [overrides, setOverrides] = useState<Record<string, OverrideTimes>>({});
@@ -78,13 +77,13 @@ export function useEventDrag(
   const effectiveEvents = useMemo(() => {
     if (Object.keys(overrides).length === 0) return events;
     return events.map((event) => {
-      const o = overrides[event._id];
+      const o = overrides[event.id];
       return o ? { ...event, startMs: o.startMs, endMs: o.endMs } : event;
     });
   }, [events, overrides]);
 
   useEffect(() => {
-    const byId = new Map<string, CalendarEvent>(events.map((e) => [e._id, e]));
+    const byId = new Map<string, CalendarEvent>(events.map((e) => [e.id, e]));
     setOverrides((prev) => {
       let next = prev;
       for (const id of Object.keys(next)) {
@@ -117,9 +116,9 @@ export function useEventDrag(
       const s = sessionRef.current;
       if (!s || e.pointerId !== s.pointerId) return;
       setOverrides((prev) => {
-        if (!prev[s.event._id]) return prev;
+        if (!prev[s.event.id]) return prev;
         const next = { ...prev };
-        delete next[s.event._id];
+        delete next[s.event.id];
         return next;
       });
       endSession();
@@ -192,10 +191,10 @@ export function useEventDrag(
         } catch {
           /* noop */
         }
-        setDraggingId(s.event._id);
+        setDraggingId(s.event.id);
       }
       const times = computeTimes(s, e.clientX, e.clientY);
-      setOverrides((prev) => ({ ...prev, [s.event._id]: times }));
+      setOverrides((prev) => ({ ...prev, [s.event.id]: times }));
     },
     [computeTimes],
   );
@@ -212,29 +211,29 @@ export function useEventDrag(
         return;
       }
       const times = computeTimes(s, e.clientX, e.clientY);
-      const id = s.event._id;
+      const id = s.event.id;
       const unchanged =
         times.startMs === s.event.startMs && times.endMs === s.event.endMs;
       if (unchanged) {
-        setOverrides((prev) => {
-          if (!prev[id]) return prev;
-          const next = { ...prev };
-          delete next[id];
-          return next;
-        });
+      setOverrides((prev) => {
+        if (!prev[s.event.id]) return prev;
+        const next = { ...prev };
+        delete next[s.event.id];
+        return next;
+      });
       } else {
         setOverrides((prev) => ({ ...prev, [id]: times }));
         moveEvent(id, times.startMs, times.endMs);
-        // The synced row lands synchronously here — clear the override now and
-        // let the next event-pass reconcile.
-        setTimeout(() => {
-          setOverrides((prev) => {
-            if (!prev[id]) return prev;
-            const next = { ...prev };
-            delete next[id];
-            return next;
-          });
-        }, 0);
+        // Don't clear the override here: `moveEvent` enqueues into the
+        // debounced batch queue (`usePendingMoves`) and the React
+        // Query cache only catches up once the batch flushes + the SSE
+        // `event.updated` invalidates `eventsKeys.all`. Keeping the
+        // override means the card stays pinned to its new position
+        // through that whole round-trip. The `useEffect` above prunes
+        // overrides for events that disappear from the cache; for
+        // events that simply update their `startMs`/`endMs`, the
+        // override remains a redundant copy of the same value (no
+        // visual diff).
       }
       endSession();
     },
@@ -247,9 +246,9 @@ export function useEventDrag(
       const s = sessionRef.current;
       if (!s) return;
       setOverrides((prev) => {
-        if (!prev[s.event._id]) return prev;
+        if (!prev[s.event.id]) return prev;
         const next = { ...prev };
-        delete next[s.event._id];
+        delete next[s.event.id];
         return next;
       });
       endSession();

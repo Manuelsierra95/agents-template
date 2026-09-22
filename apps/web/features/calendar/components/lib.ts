@@ -13,11 +13,10 @@ import {
 } from "date-fns";
 
 import type {
-  Attendee,
   CalendarEvent,
   CalendarListItem,
-  Connection,
-} from "@/lib/mocks/types";
+} from "@/lib/calendar/types";
+import type { Connection } from "@/lib/mocks/types";
 
 // ── Time-zone helpers ────────────────────────────────────────────────────────
 
@@ -417,7 +416,7 @@ export function layoutAllDayEvents(
         a.startIdx - b.startIdx ||
         b.endIdx - a.endIdx ||
         a.event.startMs - b.event.startMs ||
-        String(a.event._id).localeCompare(String(b.event._id)),
+        String(a.event.id).localeCompare(String(b.event.id)),
     );
   const laneEnds: number[] = [];
 

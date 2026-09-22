@@ -12,11 +12,10 @@ import {
   type CSSProperties,
 } from "react";
 
-import { useMocks } from "@/lib/mocks";
 import { useListBookings } from "@/lib/mocks/use-bookings";
 import { useContacts } from "@/lib/mocks/use-search";
 
-import type { CalendarEvent } from "@/lib/mocks/types";
+import type { CalendarEvent } from "@/lib/calendar/types";
 
 import { DayColumn } from "./day-column";
 import { GutterColumn } from "./gutter-column";
@@ -91,7 +90,6 @@ export const TimeStrip = forwardRef<TimeStripHandle, TimeStripProps>(
     const userInteractedRef = useRef(false);
     const [now, setNow] = useState<number | null>(null);
     const [visibleStartIdx, setVisibleStartIdx] = useState(anchorIndex);
-    const { state } = useMocks();
     const people = useContacts();
     const contactPhotos = useMemo(() => {
       const photos = new Map<string, string>();

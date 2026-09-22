@@ -4,7 +4,8 @@ import { memo, type RefObject, useCallback, useMemo, useState } from "react";
 
 import { useAvailabilityEdit } from "@/components/workspace/availability-edit-context";
 import { useDock } from "@/components/workspace/dock-context";
-import type { Booking, CalendarEvent } from "@/lib/mocks/types";
+import type { Booking } from "@/lib/mocks/types";
+import type { CalendarEvent } from "@/lib/calendar/types";
 
 import { AvailabilityBlock } from "./availability-block";
 import { BookingBlock } from "./booking-block";
@@ -235,9 +236,9 @@ function DayColumnImpl({
       >
         {positioned.map((p) => (
           <EventCard
-            key={p.event._id}
+            key={p.event.id}
             positioned={p}
-            isDragging={draggingId === p.event._id}
+            isDragging={draggingId === p.event.id}
             laneLayout={laneLayout}
             contactPhotos={contactPhotos}
             reveal={reveal}

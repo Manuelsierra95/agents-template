@@ -38,6 +38,7 @@ export async function seedOrg(handle: DbHandle, id: string = TEST_ORG_ID): Promi
 export async function resetDb(handle: DbHandle): Promise<void> {
   await handle.sql.unsafe(
     `TRUNCATE TABLE
+       calendar_event,
        conversation_message,
        customer_conversation,
        booking,

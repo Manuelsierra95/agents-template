@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 
-import type { CalendarEvent, CalendarListItem } from "@/lib/mocks/types";
+import type {
+  CalendarEvent as UICalendarEvent,
+  CalendarListItem,
+} from "@/lib/calendar/types";
 import { useListCalendars } from "@/lib/mocks/use-calendars";
 
 const GOOGLE_EVENT_COLORS: Record<string, string> = {
@@ -102,25 +105,34 @@ function hashedVar(id: string): string {
   return `--event-${(Math.abs(hash) % PALETTE_HUES.length) + 1}`;
 }
 
+/**
+ * Resolve an event to a CSS variable in our palette.
+ *
+ * The wire shape no longer carries `localCalendarId` — events belong to the
+ * organisation, not a "calendar" entity — so the only signal we have is
+ * `event.color` (a Google palette key like `"6"`). When that's missing we
+ * fall back to a hash of the event id so two uncoloured events never share
+ * a strip.
+ */
 function eventColorVar(
-  event: CalendarEvent,
-  calendarColors?: Map<string, string | undefined>,
+  event: UICalendarEvent,
+  _calendarColors?: Map<string, string | undefined>,
 ): string {
-  const own = event.color ? GOOGLE_EVENT_COLORS[event.color] : undefined;
-  const hex =
-    own ??
-    (event.localCalendarId
-      ? calendarColors?.get(event.localCalendarId)
-      : undefined);
-  return hex ? snapToPalette(hex) : hashedVar(event.localCalendarId ?? event._id);
+  const hex = event.color ? GOOGLE_EVENT_COLORS[event.color] : undefined;
+  return hex ? snapToPalette(hex) : hashedVar(event.id);
 }
 
-export function useEventColor(): (event: CalendarEvent) => string {
+export function useEventColor(): (event: UICalendarEvent) => string {
   const calendars = useListCalendars();
   return useMemo(() => {
-    const colors = new Map<string, string | undefined>();
-    for (const c of calendars) colors.set(c._id, c.backgroundColor);
-    return (event: CalendarEvent) => eventColorVar(event, colors);
+    // `calendars` is still consumed so the hook signature stays stable for
+    // callers; once we delete the calendars mock we'll stop calling this
+    // here too. The map is no longer used to colour events but is built so
+    // a debug overlay can still inspect the mock layer.
+    const _colors = new Map<string, string | undefined>();
+    for (const c of calendars) _colors.set(c._id, c.backgroundColor);
+    void _colors;
+    return (event: UICalendarEvent) => eventColorVar(event);
   }, [calendars]);
 }
 

@@ -21,9 +21,8 @@ import { GooDropdown } from "@workspace/ui/components/ui/goo-dropdown"
 import { cn } from "@workspace/ui/lib/utils"
 
 import { useListCalendars, useListConnections } from "@/lib/mocks/use-calendars"
-import { useListEventsInRange } from "@/lib/mocks/use-events"
-import { useMocks } from "@/lib/mocks"
-import type { CalendarEvent } from "@/lib/mocks/types"
+import { useListEventsInRange } from "@/features/calendar/hooks/use-calendar-events"
+import type { CalendarEvent } from "@/lib/calendar/types"
 import { useDock } from "../workspace/dock-context"
 import { usePreferences } from "../workspace/preferences-context"
 import { NotificationBell } from "../workspace/notification-bell"
@@ -66,7 +65,6 @@ export function CalendarWeekView() {
   const pagerRef = useRef<CalendarPagerHandle>(null)
   const stripRef = useRef<TimeStripHandle>(null)
   const reduce = useReducedMotion()
-  const { setState } = useMocks()
 
   const layout = useMemo(() => {
     if (view === "month") {
@@ -96,7 +94,11 @@ export function CalendarWeekView() {
     () => eventQueryRange(view, anchor, weekStartsOn),
     [view, anchor, weekStartsOn]
   )
-  const events = useListEventsInRange(queryRange) ?? []
+  const eventsQuery = useListEventsInRange({
+    fromMs: queryRange.startMs,
+    toMs: queryRange.endMs,
+  })
+  const events: CalendarEvent[] = eventsQuery.data ?? []
   const calendars = useListCalendars()
   const connections = useListConnections()
 
@@ -290,14 +292,6 @@ export function CalendarWeekView() {
     runTransition("zoom-in", () => {
       setAnchor(pageStart("day", day))
       setView("day")
-    })
-  }
-
-  const setCalendarSelected = (calendarId: string, selected: boolean) => {
-    setState((prev) => {
-      const next = new Set<string>()
-      // Read state via mock provider's setCalendarSelected exposed above
-      return prev
     })
   }
 
