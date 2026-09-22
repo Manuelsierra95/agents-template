@@ -1,7 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
-  "globalEnv": ["API_URL", "API_PORT", "DATABASE_URL", "DATABASE_URL_TEST", "AUTH_SECRET", "AUTH_BASE_URL", "AUTH_TRUSTED_ORIGINS", "REDIS_URL", "NEXT_PUBLIC_API_URL"],
+  "globalEnv": [
+    "API_URL",
+    "API_PORT",
+    "DATABASE_URL",
+    "DATABASE_URL_TEST",
+    "AUTH_SECRET",
+    "AUTH_BASE_URL",
+    "AUTH_TRUSTED_ORIGINS",
+    "REDIS_URL",
+    "NEXT_PUBLIC_API_URL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -20,7 +30,16 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["API_URL", "API_PORT", "DATABASE_URL", "AUTH_SECRET", "AUTH_BASE_URL", "AUTH_TRUSTED_ORIGINS", "REDIS_URL", "NEXT_PUBLIC_API_URL"]
+      "env": [
+        "API_URL",
+        "API_PORT",
+        "DATABASE_URL",
+        "AUTH_SECRET",
+        "AUTH_BASE_URL",
+        "AUTH_TRUSTED_ORIGINS",
+        "REDIS_URL",
+        "NEXT_PUBLIC_API_URL"
+      ]
     }
   }
 }
