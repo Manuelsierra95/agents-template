@@ -7,7 +7,7 @@ Multi-tenant API. Owns all DB writes; the Eve agent and the web client talk to i
 | Method | Path | Description |
 | --- | --- | --- |
 | GET | `/health` | Healthcheck. |
-| ALL | `/eve/*` | Pass-through proxy to Eve runtime. |
+| ALL | `/eve/*` | Pass-through proxy to Eve runtime (`apps/agent`). Injects `Authorization: Bearer ${INTERNAL_API_TOKEN}` on every upstream request. Streams Eve's NDJSON response back unchanged. |
 | ALL | `/api/auth/*` | Better Auth handler. |
 | GET | `/api/me` | Current session + org + role. |
 | GET / PATCH | `/api/businesses/me` | Tenant business profile. |
@@ -25,6 +25,7 @@ Multi-tenant API. Owns all DB writes; the Eve agent and the web client talk to i
 | GET / PATCH | `/api/agents/:id` | Per-org agent enable/disable. |
 | GET / POST | `/api/whatsapp` | WhatsApp connection state. |
 | GET | `/api/integrations` | Integrations list. |
+| ALL | `/api/internal/*` | Server-to-server namespace. Every route is gated by `requireInternalToken` — only `apps/agent` (and any future service caller) can reach them. No browser session cookie path; only the bearer token. |
 
 ## Multi-tenancy contract
 
@@ -48,3 +49,8 @@ This same flow will be wired to the WhatsApp webhook without changes — only th
 ```bash
 pnpm --filter api dev
 ```
+
+Copy `apps/api/.env.example` to `apps/api/.env` (gitignored) and fill
+the secrets. `AUTH_SECRET` and `INTERNAL_API_TOKEN` must be ≥ 32 chars;
+generate them with `openssl rand -hex 32`. `INTERNAL_API_TOKEN` must
+match the value carried by `apps/agent/.env`.
