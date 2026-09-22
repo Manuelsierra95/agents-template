@@ -7,19 +7,41 @@
 //
 // Usage: `pnpm db:test:setup`
 import { spawnSync } from "node:child_process"
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const repoRoot = resolve(__dirname, "..")
 
-const POSTGRES_USER = process.env.POSTGRES_USER ?? "agents"
-const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD ?? "agents"
-const POSTGRES_DB = process.env.POSTGRES_DB ?? "agents"
+// Read infrastructure defaults from `packages/infra/docker/.env`
+// (gitignored; colocated with the compose file so Docker Compose can
+// resolve `${VAR:-default}` substitutions against it).
+function readComposeEnv() {
+  const path = resolve(repoRoot, "packages/infra/docker/.env")
+  if (!existsSync(path)) return {}
+  const out = {}
+  const text = readFileSync(path, "utf8")
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith("#")) continue
+    const eq = trimmed.indexOf("=")
+    if (eq <= 0) continue
+    out[trimmed.slice(0, eq).trim()] = trimmed.slice(eq + 1).trim()
+  }
+  return out
+}
+
+const composeEnv = readComposeEnv()
+const POSTGRES_USER = process.env.POSTGRES_USER ?? composeEnv.POSTGRES_USER ?? "agents"
+const POSTGRES_PASSWORD =
+  process.env.POSTGRES_PASSWORD ?? composeEnv.POSTGRES_PASSWORD ?? "agents"
+const POSTGRES_DB =
+  process.env.POSTGRES_DB ?? composeEnv.POSTGRES_DB ?? "agents"
 const TEST_DB = process.env.TEST_DB ?? "agents_test"
 const POSTGRES_HOST = process.env.POSTGRES_HOST ?? "127.0.0.1"
-const POSTGRES_PORT = process.env.POSTGRES_PORT ?? "5432"
+const POSTGRES_PORT =
+  process.env.POSTGRES_PORT ?? composeEnv.POSTGRES_PORT ?? "5432"
 const TEST_URL =
   process.env.DATABASE_URL_TEST ??
   `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${TEST_DB}`
