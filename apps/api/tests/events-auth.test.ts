@@ -18,6 +18,11 @@ import { InMemoryEventBus } from "@/lib/realtime/in-memory-event-bus"
  * that does not affect request handling.
  */
 
+// Required secret for the agent-runtime namespace; the suite isn't
+// testing the internal-token gate, only the public SSE auth flow.
+const REQUIRED_TEST_TOKEN =
+  "test_internal_api_token_at_least_32_chars_long_xx"
+
 describe("GET /api/events (auth gate)", () => {
   it("returns 401 with no session cookie", async () => {
     const app = createApp(
@@ -30,6 +35,7 @@ describe("GET /api/events (auth gate)", () => {
         AUTH_SECRET: "testtesttesttesttesttesttesttest",
         AUTH_BASE_URL: "http://localhost:4000",
         AUTH_TRUSTED_ORIGINS: "http://localhost:3000",
+        INTERNAL_API_TOKEN: REQUIRED_TEST_TOKEN,
       }),
     )
 
@@ -49,6 +55,7 @@ describe("GET /api/events (auth gate)", () => {
         AUTH_SECRET: "testtesttesttesttesttesttesttest",
         AUTH_BASE_URL: "http://localhost:4000",
         AUTH_TRUSTED_ORIGINS: "http://localhost:3000",
+        INTERNAL_API_TOKEN: REQUIRED_TEST_TOKEN,
       }),
     )
 
@@ -73,6 +80,7 @@ describe("GET /api/events (auth gate)", () => {
         AUTH_SECRET: "testtesttesttesttesttesttesttest",
         AUTH_BASE_URL: "http://localhost:4000",
         AUTH_TRUSTED_ORIGINS: "http://localhost:3000",
+        INTERNAL_API_TOKEN: REQUIRED_TEST_TOKEN,
       }),
       { eventBus: bus },
     )

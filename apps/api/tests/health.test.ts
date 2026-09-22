@@ -9,6 +9,7 @@ const app = createApp(
     NODE_ENV: "test",
     CORS_ORIGINS: "*",
     LOG_LEVEL: "error",
+    INTERNAL_API_TOKEN: "test_internal_api_token_at_least_32_chars_long_xx",
   }),
 )
 

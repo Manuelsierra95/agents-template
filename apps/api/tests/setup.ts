@@ -1,8 +1,8 @@
 // Shared test setup for apps/api.
 //
-// Loads env vars from .env (repo root) if present. Sets safe defaults for
-// tests so the suite does not require any external configuration beyond a
-// reachable Postgres at DATABASE_URL.
+// Loads env vars from `apps/api/.env` if present. Sets safe defaults
+// for tests so the suite does not require any external configuration
+// beyond a reachable Postgres at DATABASE_URL.
 //
 // Why defaults matter: `@workspace/auth` calls `createAuth()` at module
 // load time which requires DATABASE_URL to be valid, even when individual
@@ -13,10 +13,11 @@ import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-const repoRoot = resolve(__dirname, "..", "..", "..")
+// apps/api/tests/setup.ts → up 1 → apps/api
+const apiRoot = resolve(__dirname, "..")
 
 function loadEnvFile() {
-  const path = resolve(repoRoot, ".env")
+  const path = resolve(apiRoot, ".env")
   if (!existsSync(path)) return
   const text = readFileSync(path, "utf8")
   for (const line of text.split("\n")) {
@@ -60,4 +61,15 @@ if (!process.env.AUTH_TRUSTED_ORIGINS) {
 }
 if (!process.env.CORS_ORIGINS) {
   process.env.CORS_ORIGINS = "http://localhost:3000"
+}
+if (!process.env.INTERNAL_API_TOKEN) {
+  process.env.INTERNAL_API_TOKEN =
+    "test_internal_api_token_at_least_32_chars_long_xx"
+}
+if (!process.env.AGENT_URL) {
+  process.env.AGENT_URL = "http://127.0.0.1:2000"
+}
+if (!process.env.PRIMARY_ORGANIZATION_ID) {
+  process.env.PRIMARY_ORGANIZATION_ID =
+    "00000000-0000-0000-0000-000000000001"
 }

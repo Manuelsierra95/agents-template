@@ -281,6 +281,7 @@ skipIfNoDb("API auth battery (e2e)", () => {
         AUTH_BASE_URL: "http://localhost:4000",
         AUTH_TRUSTED_ORIGINS: "http://localhost:3000",
         DATABASE_URL: TEST_DB_URL,
+        INTERNAL_API_TOKEN: "test_internal_api_token_at_least_32_chars_long_xx",
       }),
       { auth },
     )
