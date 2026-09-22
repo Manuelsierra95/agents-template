@@ -1,19 +1,21 @@
 // Shared test setup for @workspace/auth.
 //
-// Loads env vars from .env if present (test runs may not have them
-// inherited from dotenv-cli). Also sets safe defaults so tests don't
-// require external configuration.
+// Loads env vars from `apps/api/.env` (the API runtime is the source
+// of truth for `AUTH_SECRET` and friends). Sets safe defaults so tests
+// don't require external configuration when that file is absent.
 import { readFileSync, existsSync } from "node:fs"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { dirname } from "node:path"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+// packages/auth/tests/setup.ts → up 3 → repo root → apps/api
 const repoRoot = resolve(__dirname, "..", "..", "..")
+const apiEnvPath = resolve(repoRoot, "apps", "api", ".env")
 
 function loadEnvFile() {
-  const path = resolve(repoRoot, ".env")
-  if (!existsSync(path)) return
+  if (!existsSync(apiEnvPath)) return
+  const path = apiEnvPath
   const text = readFileSync(path, "utf8")
   for (const line of text.split("\n")) {
     const trimmed = line.trim()
