@@ -1,6 +1,9 @@
 export { ChatThread } from "@/features/chat/chat-thread"
 export type { ChatThreadProps } from "@/features/chat/chat-thread"
 
+export { MessageScrollerThread } from "@/features/chat/message-scroller-thread"
+export type { MessageScrollerThreadProps } from "@/features/chat/message-scroller-thread"
+
 export { ChatComposer } from "@/features/chat/chat-composer"
 export type { ChatComposerProps } from "@/features/chat/chat-composer"
 

@@ -1,20 +1,9 @@
 "use client"
 
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react"
-import {
-  ChatMessage,
-  ThinkingSteps,
-  ThinkingStepsHeader,
-  ThinkingStepsContent,
-  ThinkingStep,
-  ThinkingStepDetails,
-  ThinkingStepSource,
-  ThinkingStepSources,
-  ThinkingStepImage,
-} from "@/features/chat/components"
-import { clockLabel, entrySide, longDateTimeLabel } from "@/features/chat/utils/types"
-import { projectReasoning } from "@/features/chat/utils/project-reasoning"
-import type { ChatEntry, ReasoningStep } from "@/features/chat/utils/types"
+
+import { EntryRow, type EntryRowProps } from "@/features/chat/entry-row"
+import type { ChatEntry } from "@/features/chat/utils/types"
 
 export type ChatThreadProps = {
   /**
@@ -75,6 +64,10 @@ export type ChatThreadProps = {
  *   - system pills (centred, neutral)
  *   - reasoning blocks (`<ThinkingSteps>`, auto-expanded while
  *     streaming, collapsed after `reasoning.completed`)
+ *
+ * The actual data → row mapping lives in `<EntryRow />`
+ * (`features/chat/entry-row.tsx`) and is shared with the sibling
+ * `MessageScrollerThread`, so both threads render identical rows.
  *
  * No "thinking" trailing indicator is rendered: the reasoning block itself
  * is the streaming signal — its first active step carries the live
@@ -152,220 +145,11 @@ export function ChatThread({
   )
 }
 
-function EntryRow({
-  entry,
-  userActions,
-  assistantActions,
-  timeFormat,
-  mode,
-  compact,
-}: {
-  entry: ChatEntry
-  userActions?: ReactNode
-  assistantActions?: ReactNode
-  timeFormat: "short" | "long"
-  mode: "client" | "debug"
-  compact: boolean
-}) {
-  const side = entrySide(entry)
-
-  switch (entry.kind) {
-    case "user": {
-      return (
-        // Right rail: a flex row that fills the thread column width
-        // and pushes the bubble to the trailing edge. The bubble
-        // wrapper is capped at `max-w-md` (28 rem ≈ 448 px) so a
-        // long user message can't sprawl into the agent's lane —
-        // together with the column's max-w-5xl this leaves a 128 px
-        // gap between the two rails at max width.
-        <div className="flex w-full justify-end">
-          <div className="w-full max-w-md">
-            <ChatMessage
-              from="user"
-              size={compact ? "compact" : "default"}
-              // `!max-w-none` overrides ChatMessage's default
-              // `max-w-[80%]` so the bubble fills its md-cap
-              // wrapper instead of stopping at 80% of the column.
-              className="!max-w-none"
-              time={
-                <time
-                  dateTime={new Date(entry.createdAt).toISOString()}
-                  suppressHydrationWarning
-                >
-                  {timeFormat === "long"
-                    ? longDateTimeLabel(entry.createdAt)
-                    : clockLabel(entry.createdAt)}
-                </time>
-              }
-              actions={userActions}
-            >
-              {entry.content}
-            </ChatMessage>
-          </div>
-        </div>
-      )
-    }
-    case "agent": {
-      return (
-        // Left rail: mirror of the user case. Justify-start pins
-        // the bubble to the leading edge; the md-cap wrapper
-        // guarantees the same 128 px separation from the user's
-        // lane.
-        <div className="flex w-full justify-start">
-          <div className="w-full max-w-md">
-            <ChatMessage
-              from="assistant"
-              size={compact ? "compact" : "default"}
-              className="!max-w-none"
-              actions={assistantActions}
-            >
-              {entry.content}
-            </ChatMessage>
-          </div>
-        </div>
-      )
-    }
-    case "system": {
-      return (
-        <div
-          className={
-            mode === "debug"
-              ? "w-full max-w-5xl self-center text-center"
-              : "w-full max-w-[560px] self-center text-center"
-          }
-          data-sender="system"
-        >
-          <span className="inline-block rounded-full border border-line/40 bg-canvas/60 px-3 py-1 text-[11.5px] text-ink-3">
-            {entry.content}
-          </span>
-        </div>
-      )
-    }
-    case "tool": {
-      // Tool entries are kept in the type system for forward
-      // compatibility but no longer rendered as a card in the thread.
-      // Future tool-aware surfaces (operator inspector, sandbox
-      // sidebar) can opt back in by reading the same entry shape.
-      void side
-      return null
-    }
-    case "reasoning": {
-      const projected = projectReasoning(entry)
-      // Multi-step path: when the entry carries a `steps` array, render
-      // a full ThinkingSteps block with one ThinkingStep per entry.
-      // Each step's `status` (complete | active | pending) comes from
-      // the data so the caller controls streaming — pending steps
-      // return `null` from `ThinkingStep` and don't reserve space,
-      // letting the block grow incrementally.
-      if (entry.steps && entry.steps.length > 0) {
-        return (
-          <div
-            className={
-              mode === "debug" ? "w-full max-w-5xl" : "w-full max-w-[560px]"
-            }
-            data-reasoning
-            data-finalized={entry.finalized}
-          >
-            <ThinkingSteps
-              size="compact"
-              defaultOpen={!entry.finalized}
-              // `ThinkingSteps` defaults to `w-80 max-w-full`, which caps
-              // the whole Razonamiento block at 20rem regardless of the
-              // surrounding container width. In debug mode we drop the cap
-              // so the label + description can use the full container
-              // width.
-              className={mode === "debug" ? "!w-full !max-w-full" : undefined}
-            >
-              <ThinkingStepsHeader>{projected.label}</ThinkingStepsHeader>
-              <ThinkingStepsContent>
-                {entry.steps.map((step, index) => (
-                  <ReasoningStepRow
-                    key={`${entry.id}-${index}`}
-                    step={step}
-                    isLast={index === entry.steps!.length - 1}
-                  />
-                ))}
-              </ThinkingStepsContent>
-            </ThinkingSteps>
-          </div>
-        )
-      }
-      // Single-step fallback for entries without a `steps` array.
-      return (
-        <div
-          className={
-            mode === "debug" ? "w-full max-w-5xl" : "w-full max-w-[560px]"
-          }
-          data-reasoning
-          data-finalized={entry.finalized}
-        >
-          <ThinkingSteps
-            size="compact"
-            defaultOpen={!entry.finalized}
-            className={mode === "debug" ? "!w-full !max-w-full" : undefined}
-          >
-            <ThinkingStepsHeader>{projected.label}</ThinkingStepsHeader>
-            <ThinkingStepsContent>
-              <ThinkingStep
-                icon="dot"
-                showIcon={false}
-                label="Razonamiento"
-                description={projected.description}
-                status={entry.finalized ? "complete" : "active"}
-                isLast
-              />
-            </ThinkingStepsContent>
-          </ThinkingSteps>
-        </div>
-      )
-    }
-  }
-}
-
 /**
- * Renders a single `ReasoningStep` as a `<ThinkingStep>` with the
- * appropriate icon, label, description, status and inline children
- * (sources, details, image). Children are optional and rendered only
- * when the matching fields are present on the step.
- *
- * Lives next to the entry row because the renderer is the only
- * caller and it keeps the data → component mapping in one place.
+ * Re-export so existing callers that import `EntryRow` or its props
+ * directly from `@/features/chat/chat-thread` keep compiling. The
+ * canonical import path is `@/features/chat/entry-row`; this barrel
+ * stays for backward compatibility.
  */
-function ReasoningStepRow({
-  step,
-  isLast,
-}: {
-  step: ReasoningStep
-  isLast: boolean
-}) {
-  return (
-    <ThinkingStep
-      icon={step.icon as never}
-      label={step.label}
-      description={step.description}
-      status={step.status}
-      isLast={isLast}
-    >
-      {step.sources && step.sources.length > 0 ? (
-        <ThinkingStepSources>
-          {step.sources.map((source) => (
-            <ThinkingStepSource key={source}>{source}</ThinkingStepSource>
-          ))}
-        </ThinkingStepSources>
-      ) : null}
-      {step.details ? (
-        <ThinkingStepDetails
-          summary={step.details.summary}
-          details={step.details.items}
-        />
-      ) : null}
-      {step.image ? (
-        <ThinkingStepImage
-          src={step.image.src}
-          alt={step.image.alt}
-          caption={step.image.caption}
-        />
-      ) : null}
-    </ThinkingStep>
-  )
-}
+export type { EntryRowProps }
+export { EntryRow }
