@@ -3,6 +3,9 @@
  * any entry script that needs `DATABASE_URL`, `AUTH_SECRET`, etc.
  * before the rest of the dependency graph boots.
  *
+ * Loads `apps/api/.env` — the API runtime owns its own env file. There
+ * is no longer a repo-root `.env` to fall back to.
+ *
  * Why a separate file: ES modules hoist all imports above any top-level
  * code, so an inline `loadEnvFile()` call in `server.ts` would still
  * run *after* `import { createApp } from "@/app"` — which in turn
@@ -16,9 +19,9 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-// apps/api/src/config/load-dotenv.ts → up 4 → repo root
-const repoRoot = resolve(__dirname, "..", "..", "..", "..")
-const envPath = resolve(repoRoot, ".env")
+// apps/api/src/config/load-dotenv.ts → up 2 → apps/api
+const apiRoot = resolve(__dirname, "..", "..")
+const envPath = resolve(apiRoot, ".env")
 
 function parseEnvLine(line: string): [string, string] | null {
   const trimmed = line.trim()

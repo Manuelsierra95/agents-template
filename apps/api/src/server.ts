@@ -41,9 +41,9 @@ const server = serve(
         env: env.NODE_ENV,
         bus: env.REDIS_URL ? "redis" : "in-memory",
       },
-      "api listening",
+      "api listening"
     )
-  },
+  }
 )
 
 let shuttingDown = false

@@ -18,6 +18,7 @@
     "@workspace/auth": "workspace:*",
     "@workspace/contracts": "workspace:*",
     "@workspace/db": "workspace:*",
+    "drizzle-orm": "^0.36.4",
     "hono": "^4.13.5",
     "ioredis": "^5.11.1",
     "zod": "^3.23.8"
